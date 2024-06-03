@@ -4,7 +4,7 @@
 
 ImageGray *create_image_gray() {
     const char *filename = "input_image_example_Gray.txt";
-    FILE *file = fopen(filename, "w");
+    FILE *file = fopen(filename, "r");
     if (!file) {
         fprintf(stderr, "Erro ao abrir o arquivo %s\n", filename);
         return NULL;
@@ -18,7 +18,6 @@ ImageGray *create_image_gray() {
         return NULL;
     }
 
-    printf("Comiirr")
     // Alocar memória para a estrutura da imagem
     ImageGray *image = (ImageGray *)malloc(sizeof(ImageGray));
     if (!image) {
