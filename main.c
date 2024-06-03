@@ -1,29 +1,19 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "image.h"
 
 int main() {
-    ImageGray *imagecinza = create_image_gray();
-    if (!imagecinza) {
-        fprintf(stderr, "Erro ao criar a imagem\n");
+    
+    ImageRGB *image_rgb = create_image_rgb();
+    if (!image_rgb) {
+        fprintf(stderr, "Erro ao criar a imagem RGB\n");
         return 1;
     }
 
-    printf("Dimensões da imagem: %d x %d\n", imagecinza->dim.largura, imagecinza->dim.altura);
-    printf("Valor do primeiro pixel: %d\n", imagecinza->pixels[0].value);
+    printf("Dimensões da imagem RGB: %d x %d\n", image_rgb->dim.largura, image_rgb->dim.altura);
+    printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d.\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
 
-    free_image_gray(imagecinza);
-
-    ImageRGB *imagergb = create_image_rgb();
-    if (!imagergb) {
-        fprintf(stderr, "Erro ao criar a imagem\n");
-        return 1;
-    }
-
-    printf("Dimensões da imagem: %d x %d\n", imagergb->dim.largura, imagergb->dim.altura);
-    printf("Valor do primeiro pixel: %d\n", imagergb->pixels[0].red,imagergb->pixels[0].green,imagergb->pixels[0].blue);
-
-    free_image_gray(imagergb);
+    free_image_rgb(image_rgb);
 
     return 0;
 }
-
