@@ -18,6 +18,7 @@ ImageGray *create_image_gray() {
         return NULL;
     }
 
+    printf("Comiirr")
     // Alocar memória para a estrutura da imagem
     ImageGray *image = (ImageGray *)malloc(sizeof(ImageGray));
     if (!image) {
