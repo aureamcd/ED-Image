@@ -51,3 +51,10 @@ ImageGray *create_image_gray() {
     fclose(file);
     return image;
 }
+
+void free_image_gray(ImageGray *image) {
+    if (image) {
+        free(image->pixels);
+        free(image);
+    }
+}
