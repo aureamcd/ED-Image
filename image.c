@@ -3,7 +3,7 @@
 #include "image.h"
 
 ImageGray *create_image_gray() {
-    const char *filename = "input_image_example_Gray.txt";
+    const char *filename = "C:/Users/Áurea Letícia/Documents/Trabalho ED/ED-Image/utils/input_image_example_Gray.txt";
     FILE *file = fopen(filename, "r");
     if (!file) {
         fprintf(stderr, "Erro ao abrir o arquivo %s\n", filename);
