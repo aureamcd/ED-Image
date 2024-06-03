@@ -4,7 +4,7 @@
 
 ImageGray *create_image_gray() {
     const char *filename = "input_image_example_Gray.txt";
-    FILE *file = fopen(filename, "r");
+    FILE *file = fopen(filename, "w");
     if (!file) {
         fprintf(stderr, "Erro ao abrir o arquivo %s\n", filename);
         return NULL;
