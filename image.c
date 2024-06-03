@@ -3,6 +3,7 @@
 #include "image.h"
 
 ImageGray *create_image_gray() {
+    printf("oi");
     const char *filename = "C:\\Users\\luisl\\OneDrive\\Documentos\\GitHub\\ED-Image\\utils\\input_image_example_Gray.txt";
     FILE *file = fopen(filename, "r");
     if (!file) {
