@@ -16,7 +16,7 @@ ImageGray *create_image_gray()
    fscanf(file, "%d", &imageGray->dim.largura);
     
 
-    int **matriz = (int *)malloc(altura * sizeof())
+    
 
         // Ler as dimensões da imagem
         Dimensoes dim;
