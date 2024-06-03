@@ -17,6 +17,7 @@ ImageGray *create_image_gray() {
         fclose(file);
         return NULL;
     }
+    printf("Altura lida: %d, Largura lida: %d\n", dim.altura, dim.largura); // Mensagem de depuração
 
     // Alocar memória para a estrutura da imagem
     ImageGray *image = (ImageGray *)malloc(sizeof(ImageGray));
@@ -39,19 +40,19 @@ ImageGray *create_image_gray() {
     // Ler os valores dos pixels
     for (int i = 0; i < dim.largura * dim.altura; i++) {
         int pixel_value;
-    if (fscanf(file, "%d", &pixel_value) != 1) {
-        fprintf(stderr, "Erro ao ler o valor do pixel\n");
-        free(image->pixels);
-        free(image);
-        fclose(file);
-    return NULL;
-    }
-    image->pixels[i].value = pixel_value;
+        if (fscanf(file, "%d,", &pixel_value) != 1) {
+            fprintf(stderr, "Erro ao ler o valor do pixel no índice %d\n", i); // Mensagem de depuração
+            free(image->pixels);
+            free(image);
+            fclose(file);
+            return NULL;
+        }
+        printf("Pixel %d lido: %d\n", i, pixel_value); // Mensagem de depuração
+        image->pixels[i].value = pixel_value;
     }
     fclose(file);
     return image;
 }
-
 
 void free_image_gray(ImageGray *image) {
     if (image) {
@@ -59,4 +60,5 @@ void free_image_gray(ImageGray *image) {
         free(image);
     }
 }
+
 
