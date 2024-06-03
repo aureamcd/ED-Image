@@ -2,17 +2,26 @@
 #include <stdlib.h>
 #include "image.h"
 
-ImageGray *create_image_gray() {
-    const char *filename = "C:\\Users\\luisl\\OneDrive\\Documentos\\GitHub\\ED-Image\\utils\\input_image_example_Gray.txt";
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        fprintf(stderr, "Erro ao abrir o arquivo %s\n", filename);
+ImageGray *create_image_gray()
+{
+    FILE *file = fopen("input_image_Gray.txt", "r");
+
+    if (!file)
+    {
+        fprintf(stderr, "Erro ao abrir o arquivo\n");
         return NULL;
     }
 
-    // Ler as dimensões da imagem
-    Dimensoes dim;
-    if (fscanf(file, "%d", &dim.altura) != 1 || fscanf(file, "%d", &dim.largura) != 1) {
+   fscanf(file, "%d", &imageGray->dim.altura);
+   fscanf(file, "%d", &imageGray->dim.largura);
+    
+
+    int **matriz = (int *)malloc(altura * sizeof())
+
+        // Ler as dimensões da imagem
+        Dimensoes dim;
+    if (fscanf(file, "%d %d", &dim.altura, &dim.largura) != 2)
+    {
         fprintf(stderr, "Erro ao ler as dimensões da imagem\n");
         fclose(file);
         return NULL;
@@ -20,8 +29,9 @@ ImageGray *create_image_gray() {
 
     // Alocar memória para a estrutura da imagem
     ImageGray *image = (ImageGray *)malloc(sizeof(ImageGray));
-    if (!image) {
-        fprintf(stderr, "Erro ao alocar memória para a imagem\n");
+    if (!image)
+    {
+        fprintf(stderr, "Erro ao alocar memória para a estrutura da imagem\n");
         fclose(file);
         return NULL;
     }
@@ -29,7 +39,8 @@ ImageGray *create_image_gray() {
 
     // Alocar memória para os pixels
     image->pixels = (PixelGray *)malloc(dim.largura * dim.altura * sizeof(PixelGray));
-    if (!image->pixels) {
+    if (!image->pixels)
+    {
         fprintf(stderr, "Erro ao alocar memória para os pixels\n");
         free(image);
         fclose(file);
@@ -37,17 +48,18 @@ ImageGray *create_image_gray() {
     }
 
     // Ler os valores dos pixels
-    for (int i = 0; i < dim.largura * dim.altura; i++) {
-        int pixel_value;
-    if (fscanf(file, "%d", &pixel_value) != 1) {
-        fprintf(stderr, "Erro ao ler o valor do pixel\n");
-        free(image->pixels);
-        free(image);
-        fclose(file);
-    return NULL;
+    for (int i = 0; i < dim.largura * dim.altura; i++)
+    {
+        if (fscanf(file, "%d", &image->pixels[i].value) != 1)
+        {
+            fprintf(stderr, "Erro ao ler o valor do pixel %d\n", i);
+            free(image->pixels);
+            free(image);
+            fclose(file);
+            return NULL;
+        }
     }
-    image->pixels[i].value = pixel_value;
-    }
+
     fclose(file);
     return image;
 }

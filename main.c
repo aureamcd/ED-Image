@@ -3,7 +3,7 @@
 
 int main() {
     
-    ImageGray *image = create_image_gray();
+    ImageGray *image = create_image_gray();  
     if (!image) {
         fprintf(stderr, "Erro ao criar a imagem\n");
         return 1;
@@ -16,5 +16,5 @@ int main() {
     
     free_image_gray(image);
 
-    return 0;
+    return 0;dd
 }
