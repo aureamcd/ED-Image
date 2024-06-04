@@ -49,7 +49,7 @@ void *read_image_gray() {
     return image;
 }
 
-void *create_image_rgb() {
+void *read_image_rgb() {
     const char *filename = "input_image_example_RGB.txt";
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -98,7 +98,6 @@ void *create_image_rgb() {
     fclose(file);
     return image;
 }
-
 
 void free_image_gray(ImageGray *image) {
     if (image) {
