@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "image.h"
 
-int main() {
+int main() {    
     
     ImageRGB *image_rgb = read_image_rgb();
     if (!image_rgb) {
