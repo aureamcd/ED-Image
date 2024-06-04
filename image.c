@@ -48,52 +48,12 @@ void liberar_lista(Lista *lista)
     free(lista);
 }
 
-void create_image_gray(ImageGray *img, Lista *lista)
-{
-    // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
-    // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
-
-    // chamar a struct (que estara com os novos valores), e preencher o arquivo
-    // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
-    // adicionar ao encadeamento, no final
-    char filename[50];
-    snprintf(filename, sizeof(filename), "alteracao%d.txt", lista->tam + 1);
-
-    FILE *file = fopen(filename, "w");
-    if (!file)
-    {
-        fprintf(stderr, "Erro ao criar o arquivo %s\n", filename);
-        return;
+void percorrer_lista(Lista *lista) {
+    Elemento *atual = lista->inicio;
+    while (atual != NULL) {
+        printf("%s\n", atual->filename);
+        atual = atual->prox;
     }
-
-    fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
-    for (int i = 0; i < img->dim.altura; i++)
-    {
-        for (int j = 0; j < img->dim.largura; j++)
-        {
-            fprintf(file, "%d,", img->pixels[i * img->dim.largura + j].value);
-        }
-        fprintf(file, "\n");
-    }
-
-    fclose(file);
-
-    // Adiciona a imagem à lista
-    ImageGray *nova_imagem = (ImageGray *)malloc(sizeof(ImageGray));
-    if (!nova_imagem) {
-        fprintf(stderr, "Erro ao alocar memoria para a nova imagem\n");
-        return;
-    }
-    *nova_imagem = *img;
-    nova_imagem->pixels = (PixelGray *)malloc(img->dim.altura * img->dim.largura * sizeof(PixelGray));
-    if (!nova_imagem->pixels) {
-        fprintf(stderr, "Erro ao alocar memoria para os pixels da nova imagem\n");
-        free(nova_imagem);
-        return;
-    }
-    memcpy(nova_imagem->pixels, img->pixels, img->dim.altura * img->dim.largura * sizeof(PixelGray));
-
-    adicionar_no_lista(lista, filename);
 }
 
 ImageGray *read_image_gray(const char *filename)
@@ -204,6 +164,54 @@ ImageRGB *read_image_rgb(const char *filename)
     return image;
 }
 
+void create_image_gray(ImageGray *img, Lista *lista)
+{
+    // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
+    // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
+
+    // chamar a struct (que estara com os novos valores), e preencher o arquivo
+    // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
+    // adicionar ao encadeamento, no final
+    char filename[50];
+    snprintf(filename, sizeof(filename), "alteracao%d.txt", lista->tam + 1);
+
+    FILE *file = fopen(filename, "w");
+    if (!file)
+    {
+        fprintf(stderr, "Erro ao criar o arquivo %s\n", filename);
+        return;
+    }
+
+    fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
+    for (int i = 0; i < img->dim.altura; i++)
+    {
+        for (int j = 0; j < img->dim.largura; j++)
+        {
+            fprintf(file, "%d,", img->pixels[i * img->dim.largura + j].value);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+
+    // Adiciona a imagem à lista
+    ImageGray *nova_imagem = (ImageGray *)malloc(sizeof(ImageGray));
+    if (!nova_imagem) {
+        fprintf(stderr, "Erro ao alocar memoria para a nova imagem\n");
+        return;
+    }
+    *nova_imagem = *img;
+    nova_imagem->pixels = (PixelGray *)malloc(img->dim.altura * img->dim.largura * sizeof(PixelGray));
+    if (!nova_imagem->pixels) {
+        fprintf(stderr, "Erro ao alocar memoria para os pixels da nova imagem\n");
+        free(nova_imagem);
+        return;
+    }
+    memcpy(nova_imagem->pixels, img->pixels, img->dim.altura * img->dim.largura * sizeof(PixelGray));
+
+    adicionar_no_lista(lista, filename);
+}
+
 void free_image_gray(ImageGray *image)
 {
     if (image)
@@ -211,6 +219,54 @@ void free_image_gray(ImageGray *image)
         free(image->pixels);
         free(image);
     }
+}
+
+void create_image_rgb(ImageRGB *img, Lista *lista)
+{
+    // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
+    // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
+
+    // chamar a struct (que estara com os novos valores), e preencher o arquivo
+    // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
+    // adicionar ao encadeamento, no final
+    char filename[50];
+    snprintf(filename, sizeof(filename), "alteracao%d.txt", lista->tam + 1);
+
+    FILE *file = fopen(filename, "w");
+    if (!file)
+    {
+        fprintf(stderr, "Erro ao criar o arquivo %s\n", filename);
+        return;
+    }
+
+    fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
+    for (int i = 0; i < img->dim.altura; i++)
+    {
+        for (int j = 0; j < img->dim.largura; j++)
+        {
+            fprintf(file, "%d %d %d,", img->pixels[i * img->dim.largura + j].red, img->pixels[i * img->dim.largura + j].green, img->pixels[i * img->dim.largura + j].blue);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+
+    // Adiciona a imagem à lista
+    ImageRGB *nova_imagem = (ImageRGB *)malloc(sizeof(ImageRGB));
+    if (!nova_imagem) {
+        fprintf(stderr, "Erro ao alocar memoria para a nova imagem\n");
+        return;
+    }
+    *nova_imagem = *img;
+    nova_imagem->pixels = (PixelRGB *)malloc(img->dim.altura * img->dim.largura * sizeof(PixelRGB));
+    if (!nova_imagem->pixels) {
+        fprintf(stderr, "Erro ao alocar memoria para os pixels da nova imagem\n");
+        free(nova_imagem);
+        return;
+    }
+    memcpy(nova_imagem->pixels, img->pixels, img->dim.altura * img->dim.largura * sizeof(PixelRGB));
+
+    adicionar_no_lista(lista, filename);
 }
 
 void free_image_rgb(ImageRGB *image)
