@@ -173,7 +173,7 @@ void create_image_gray(ImageGray *img, Lista *lista)
     // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
     // adicionar ao encadeamento, no final
     char filename[50];
-    snprintf(filename, sizeof(filename), "alteracao%d.txt", lista->tam + 1);
+    snprintf(filename, sizeof(filename), "alteracao_gray%d.txt", lista->tam + 1);
 
     FILE *file = fopen(filename, "w");
     if (!file)
@@ -230,7 +230,7 @@ void create_image_rgb(ImageRGB *img, Lista *lista)
     // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
     // adicionar ao encadeamento, no final
     char filename[50];
-    snprintf(filename, sizeof(filename), "alteracao%d.txt", lista->tam + 1);
+    snprintf(filename, sizeof(filename), "alteracao_rgb%d.txt", lista->tam + 1);
 
     FILE *file = fopen(filename, "w");
     if (!file)
