@@ -29,8 +29,8 @@ int main()
         {
         case 1:
             printf("\nDigite o nome do arquivo da imagem em escala de cinza: ");
-            scanf("%s", filename_rgb);
-            image_gray = read_image_gray(filename_rgb);
+            scanf("%s", filename_gray);
+            image_gray = read_image_gray(filename_gray);
             if (image_gray)
             {
                 printf("\nDimensoes da imagem em escala de cinza: %d x %d\n", image_gray->dim.largura, image_gray->dim.altura);
@@ -44,8 +44,8 @@ int main()
             break;
         case 2:
             printf("\nDigite o nome do arquivo da imagem RGB: ");
-            scanf("%s", filename_gray);
-            image_rgb = read_image_rgb(filename_gray);
+            scanf("%s", filename_rgb);
+            image_rgb = read_image_rgb(filename_rgb);
             if (image_rgb)
             {
                 printf("\nDimensoes da imagem RGB: %d x %d\n", image_rgb->dim.largura, image_rgb->dim.altura);
