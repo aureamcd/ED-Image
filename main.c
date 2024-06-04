@@ -16,7 +16,7 @@ int main() {
     // Liberar imagem em escala de cinza
     free_image_gray(image_gray);
 
-      ImageRGB *image_rgb = read_image_rgb();
+    ImageRGB *image_rgb = read_image_rgb();
     if (!image_rgb) {
         fprintf(stderr, "Erro ao criar a imagem RGB\n");
         return 1;

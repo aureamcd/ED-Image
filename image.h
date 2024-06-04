@@ -24,8 +24,8 @@ typedef struct imageRGB {
 } ImageRGB;
 
 //funções de leitura de arquivo
-void *read_image_gray();
-void *read_image_rgb();
+ImageGray *read_image_gray();
+ImageRGB *read_image_rgb();
 
 // Funções de criação e liberação
 ImageGray *create_image_gray();

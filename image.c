@@ -102,6 +102,13 @@ ImageRGB *read_image_rgb() {
     return image;
 }
 
+ImageRGB *create_image_rgb();
+void free_image_rgb(ImageRGB *image);
+
+
+
+
+
 void free_image_gray(ImageGray *image) {
     if (image) {
         printf("Liberando memória da imagem em escala de cinza...\n");
@@ -119,5 +126,6 @@ void free_image_rgb(ImageRGB *image) {
         printf("Memória liberada com sucesso!\n");
     }
 }
+
 
 
