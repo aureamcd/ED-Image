@@ -15,5 +15,17 @@ int main() {
 
     free_image_rgb(image_rgb);
 
+    ImageGray *image_gray = create_image_gray();
+    if (!image_gray) {
+        fprintf(stderr, "Erro ao criar a imagem em escala de cinza\n");
+        return 1;
+    }
+
+    printf("Dimensões da imagem em escala de cinza: %d x %d\n", image_gray->dim.largura, image_gray->dim.altura);
+    printf("Valor do primeiro pixel em escala de cinza: %d\n", image_gray->pixels[0].value);
+
+    // Liberar imagem em escala de cinza
+    free_image_gray(image_gray);
+
     return 0;
 }
