@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "image.h"
 
 Lista *criaLista()
@@ -11,23 +12,27 @@ Lista *criaLista()
     return lista;
 }
 
-void adicionar_no_lista(Lista *lista, ImageGray *image)
+void adicionar_no_lista(Lista *lista, const char *filename)
 {
-    Elemento *novo_no = (Elemento *)malloc(sizeof(Elemento));
-    novo_no->image = image;
-    novo_no->prox = NULL;
-    novo_no->ant = lista->fim;
+    Elemento *novo = (Elemento *)malloc(sizeof(Elemento));
+    if (!novo) {
+        fprintf(stderr, "Erro ao alocar memoria para o elemento\n");
+        return;
+    }
+    strncpy(novo->filename, filename, sizeof(novo->filename) - 1);
+    novo->filename[sizeof(novo->filename) - 1] = '\0';
+    novo->prox = NULL;
+    novo->ant = lista->fim;
 
-    if (lista->fim)
+    if (lista->tam == 0)
     {
-        lista->fim->prox = novo_no;
+        lista->inicio = novo;
     }
     else
     {
-        lista->inicio = novo_no;
+        lista->fim->prox = novo;
     }
-
-    lista->fim = novo_no;
+    lista->fim = novo;
     lista->tam++;
 }
 
@@ -37,7 +42,6 @@ void liberar_lista(Lista *lista)
     while (atual)
     {
         Elemento *proximo = atual->prox;
-        free_image_gray(atual->image);
         free(atual);
         atual = proximo;
     }
@@ -76,14 +80,20 @@ void create_image_gray(ImageGray *img, Lista *lista)
 
     // Adiciona a imagem à lista
     ImageGray *nova_imagem = (ImageGray *)malloc(sizeof(ImageGray));
+    if (!nova_imagem) {
+        fprintf(stderr, "Erro ao alocar memoria para a nova imagem\n");
+        return;
+    }
     *nova_imagem = *img;
     nova_imagem->pixels = (PixelGray *)malloc(img->dim.altura * img->dim.largura * sizeof(PixelGray));
-    for (int i = 0; i < img->dim.altura * img->dim.largura; i++)
-    {
-        nova_imagem->pixels[i] = img->pixels[i];
+    if (!nova_imagem->pixels) {
+        fprintf(stderr, "Erro ao alocar memoria para os pixels da nova imagem\n");
+        free(nova_imagem);
+        return;
     }
+    memcpy(nova_imagem->pixels, img->pixels, img->dim.altura * img->dim.largura * sizeof(PixelGray));
 
-    adicionar_no_lista(lista, nova_imagem);
+    adicionar_no_lista(lista, filename);
 }
 
 ImageGray *read_image_gray(const char *filename)
