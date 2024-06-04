@@ -24,7 +24,7 @@ typedef struct imageRGB {
 } ImageRGB;
 
 typedef struct elemento {
-    ImageGray *image;
+    char filename[50];
     struct elemento *prox;
     struct elemento *ant;
 } Elemento;
@@ -36,7 +36,7 @@ typedef struct lista {
 } Lista;
 
 Lista *criaLista();
-void adicionar_no_lista(Lista *lista, ImageGray *image);
+void adicionar_no_lista(Lista *lista, const char *filename);
 void liberar_lista(Lista *lista);
 
 // Funções de leitura de arquivo
