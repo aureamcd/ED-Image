@@ -23,12 +23,28 @@ typedef struct imageRGB {
     PixelRGB *pixels;
 } ImageRGB;
 
-//funções de leitura de arquivo
-ImageGray *read_image_gray();
-ImageRGB *read_image_rgb();
+typedef struct elemento {
+    ImageGray *image;
+    struct elemento *prox;
+    struct elemento *ant;
+} Elemento;
+
+typedef struct lista {
+    Elemento *inicio;
+    Elemento *fim;
+    int tam;
+} Lista;
+
+Lista *criaLista();
+void adicionar_no_lista(Lista *lista, ImageGray *image);
+void liberar_lista(Lista *lista);
+
+// Funções de leitura de arquivo
+ImageGray *read_image_gray(const char *filename);
+ImageRGB *read_image_rgb(const char *filename);
 
 // Funções de criação e liberação
-ImageGray *create_image_gray();
+void create_image_gray(ImageGray *img, Lista *lista);
 void free_image_gray(ImageGray *image);
 
 ImageRGB *create_image_rgb();
