@@ -38,6 +38,7 @@ typedef struct lista {
 Lista *criaLista();
 void adicionar_no_lista(Lista *lista, const char *filename);
 void liberar_lista(Lista *lista);
+void percorrer_lista(Lista *lista);
 
 // Funções de leitura de arquivo
 ImageGray *read_image_gray(const char *filename);
@@ -47,7 +48,7 @@ ImageRGB *read_image_rgb(const char *filename);
 void create_image_gray(ImageGray *img, Lista *lista);
 void free_image_gray(ImageGray *image);
 
-ImageRGB *create_image_rgb();
+void create_image_rgb(ImageRGB *img, Lista *lista);
 void free_image_rgb(ImageRGB *image);
 
 // Operações para ImageGray
