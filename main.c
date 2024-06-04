@@ -3,17 +3,6 @@
 #include "image.h"
 
 int main() {    
-    
-    ImageRGB *image_rgb = read_image_rgb();
-    if (!image_rgb) {
-        fprintf(stderr, "Erro ao criar a imagem RGB\n");
-        return 1;
-    }
-
-    printf("Dimensões da imagem RGB: %d x %d\n", image_rgb->dim.largura, image_rgb->dim.altura);
-    printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d.\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
-
-    free_image_rgb(image_rgb);
 
     ImageGray *image_gray = read_image_gray();
     if (!image_gray) {
@@ -26,6 +15,17 @@ int main() {
 
     // Liberar imagem em escala de cinza
     free_image_gray(image_gray);
+
+      ImageRGB *image_rgb = read_image_rgb();
+    if (!image_rgb) {
+        fprintf(stderr, "Erro ao criar a imagem RGB\n");
+        return 1;
+    }
+
+    printf("Dimensões da imagem RGB: %d x %d\n", image_rgb->dim.largura, image_rgb->dim.altura);
+    printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d.\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
+
+    free_image_rgb(image_rgb);
 
     return 0;
 }

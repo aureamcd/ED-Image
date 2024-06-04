@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include "image.h"
 
-void *read_image_gray() {
+
+
+
+ImageGray *read_image_gray() {
     const char *filename = "input_image_example_Gray.txt";
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -49,7 +52,7 @@ void *read_image_gray() {
     return image;
 }
 
-void *read_image_rgb() {
+ImageRGB *read_image_rgb() {
     const char *filename = "input_image_example_RGB.txt";
     FILE *file = fopen(filename, "r");
     if (!file) {
