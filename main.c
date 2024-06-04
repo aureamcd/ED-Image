@@ -4,7 +4,7 @@
 
 int main() {
     
-    ImageRGB *image_rgb = create_image_rgb();
+    ImageRGB *image_rgb = read_image_rgb();
     if (!image_rgb) {
         fprintf(stderr, "Erro ao criar a imagem RGB\n");
         return 1;
@@ -15,7 +15,7 @@ int main() {
 
     free_image_rgb(image_rgb);
 
-    ImageGray *image_gray = create_image_gray();
+    ImageGray *image_gray = read_image_gray();
     if (!image_gray) {
         fprintf(stderr, "Erro ao criar a imagem em escala de cinza\n");
         return 1;
