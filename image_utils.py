@@ -56,3 +56,4 @@ def image_rgb_from_txt(txt_path, output_path):
 image_gray_from_txt("gray.txt", "imagem_gray.png")
 image_rgb_from_txt("rgb.txt", "imagem_rgb.png")
 image_gray_from_txt("alteracao1.txt", "imagem_gray1.png")
+image_rgb_from_txt("alteracao2.txt", "imagem_rgb1.png")
