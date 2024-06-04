@@ -53,5 +53,6 @@ def image_rgb_from_txt(txt_path, output_path):
         # Salva a imagem resultante
         nova_imagem.save(output_path)
 
-image_gray_from_txt("input_image_example_Gray.txt", "imagem_gray.png")
-image_rgb_from_txt("input_image_example_RGB.txt", "imagem_rgb.png")
+image_gray_from_txt("gray.txt", "imagem_gray.png")
+image_rgb_from_txt("rgb.txt", "imagem_rgb.png")
+image_gray_from_txt("alteracao1.txt", "imagem_gray1.png")
