@@ -48,7 +48,7 @@ int main()
             {
                 printf("\nDimensoes da imagem RGB: %d x %d\n", image_rgb->dim.largura, image_rgb->dim.altura);
                 printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
-                free_image_rgb(image_rgb); // Adicionado para liberar a memória da imagem RGB
+                create_image_rgb(image_rgb, lista);
             }
             else
             {
