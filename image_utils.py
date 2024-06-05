@@ -57,6 +57,7 @@ image_gray_from_txt("gray.txt", "imagem_gray.png")
 image_gray_from_txt("alteracao_gray1.txt", "imagem_gray1.png")
 image_gray_from_txt("alteracao_gray2.txt", "imagem_gray2.png")
 image_gray_from_txt("alteracao_gray3.txt", "imagem_gray3.png")
+image_gray_from_txt("alteracao_gray4.txt", "imagem_gray4.png")
 
 
 '''image_rgb_from_txt("rgb.txt", "imagem_rgb.png")

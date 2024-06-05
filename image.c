@@ -316,6 +316,29 @@ void flip_vertical_rgb(Lista *lista, ImageRGB *img)
     create_image_rgb(img, lista);
 }
 
+void flip_horizontal_gray(Lista *lista, ImageGray *img)
+{
+   
+    for (int i = 0; i < img->dim.altura; i++)
+    {
+        for (int j = 0; j < img->dim.largura / 2; j++)
+        {
+            // Calcular os índices dos pixels a serem trocados
+            int idx1 = i * img->dim.largura + j;
+            int idx2 = i * img->dim.largura + (img->dim.largura - j - 1);
+
+            // Trocar os pixels entre as colunas j e largura-j-1
+            int temp = img->pixels[idx1].value;
+            img->pixels[idx1].value = img->pixels[idx2].value;
+            img->pixels[idx2].value = temp;
+        }
+    }
+
+    // Atualizar a imagem na lista
+    create_image_gray(img, lista);
+}
+
+
 void transpose_Gray(Lista *lista, ImageGray *img)
 {
     // Aplicar o transpose na própria imagem

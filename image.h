@@ -55,7 +55,7 @@ void free_image_rgb(ImageRGB *image);
 
 // Operações para ImageGray
 void flip_vertical_gray(Lista *lista,ImageGray *image);
-ImageGray *flip_horizontal_gray(ImageGray *image);
+void flip_horizontal_gray(Lista * lista,ImageGray *image);
 void transpose_Gray(Lista *lista, ImageGray *img);
 
 // Operações para ImageRGB

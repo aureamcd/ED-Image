@@ -12,8 +12,8 @@ void print_menu()
 void print_flip_menu()
 {
     printf("\nEscolha uma opcao:\n");
-    printf("1. Aplicar flip vertical\n");
-    printf("2. Aplicar flip horizontal\n");
+    printf("1. Aplicar flip horizontal\n");
+    printf("2. Aplicar flip vertical\n");
     printf("3. Aplicar transpose\n");
     printf("4. Voltar ao menu principal\n");
 }
@@ -57,6 +57,17 @@ int main()
                     case 1:
                         if (lista_gray->tam > 0)
                         {
+                            printf("\nFlip horizontal aplicado.\n");
+                            flip_horizontal_gray(lista_gray,image_gray);
+                        }
+                        else
+                        {
+                            printf("\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
+                        }
+                        break;
+                    case 2:
+                        if (lista_gray->tam > 0)
+                        {
                             printf("\nFlip vertical aplicado.\n");
                             flip_vertical_gray(lista_gray,image_gray);
                         }
@@ -65,18 +76,8 @@ int main()
                             printf("\nNenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
                         }
                         break;
-                    case 2:
-                        if (lista_gray->tam > 0)
-                        {
-                            printf("\nFlip horizontal aplicado.\n");
-                            // Implemente a função flip_horizontal_gray(lista_gray);
-                        }
-                        else
-                        {
-                            printf("\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
-                        }
-                        break;
-                        case 3:
+                   
+                    case 3:
                         if (lista_gray->tam > 0)
                         {
                             printf("\nTranspose aplicado.\n");
@@ -94,7 +95,7 @@ int main()
                         break;
                     }
 
-                    if (flip_choice == 3)
+                    if (flip_choice == 4)
                     {
                         break;
                     }
