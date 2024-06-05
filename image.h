@@ -59,7 +59,7 @@ ImageGray *flip_horizontal_gray(ImageGray *image);
 ImageGray *transpose_Gray(const ImageGray *image);
 
 // Operações para ImageRGB
-ImageRGB *flip_vertical_rgb(const ImageRGB *image);
+void *flip_vertical_rgb(const ImageRGB *image, Lista *lista);
 ImageRGB *flip_horizontal_rgb(const ImageRGB *image);
 ImageRGB *transpose_RGB(const ImageRGB *image);
 
