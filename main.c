@@ -14,7 +14,8 @@ void print_flip_menu()
     printf("\nEscolha uma opcao:\n");
     printf("1. Aplicar flip vertical\n");
     printf("2. Aplicar flip horizontal\n");
-    printf("3. Voltar ao menu principal\n");
+    printf("3. Aplicar transpose\n");
+    printf("4. Voltar ao menu principal\n");
 }
 
 int main()
@@ -75,7 +76,18 @@ int main()
                             printf("\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
                         }
                         break;
-                    case 3:
+                        case 3:
+                        if (lista_gray->tam > 0)
+                        {
+                            printf("\nTranspose aplicado.\n");
+                           transpose_Gray(lista_gray, image_gray);
+                        }
+                        else
+                        {
+                            printf("\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
+                        }
+                        break;
+                    case 4:
                         break;
                     default:
                         printf("\nOpcao invalida! Tente novamente.\n");
