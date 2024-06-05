@@ -6,7 +6,8 @@ void print_menu()
     printf("\nEscolha uma opcao:\n");
     printf("1. Carregar imagem em escala de cinza (Gray)\n");
     printf("2. Carregar imagem RGB\n");
-    printf("3. Sair\n");
+    printf("3. Aplicar flip vertical em imagem em escala de cinza\n");
+    printf("4. Sair\n");
 }
 
 int main()
@@ -57,7 +58,17 @@ int main()
                 fprintf(stderr, "\nErro ao carregar a imagem RGB\n");
             }
             break;
-        case 3:
+         case 3:
+            // Testar a função flip_vertical_gray
+            if (lista_gray->tam > 0) {
+                printf("\nFlip vertical aplicado.\n");
+                flip_vertical_gray(lista_gray);
+            } else {
+                printf("\nNenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
+            }
+            break;
+        case 4:
+            // Liberar listas e encerrar o programa
             liberar_lista(lista_gray);
             liberar_lista(lista_rgb);
             return 0;

@@ -277,3 +277,91 @@ void free_image_rgb(ImageRGB *image)
         free(image);
     }
 }
+
+int write_image_gray(const char *filename, ImageGray *image) {
+    FILE *file = fopen(filename, "w");
+    if (!file) {
+        fprintf(stderr, "Erro ao abrir o arquivo %s para escrita.\n", filename);
+        return 0;
+    }
+
+    // Escrever as dimensões da imagem
+    fprintf(file, "%d\n%d\n", image->dim.altura, image->dim.largura);
+
+    // Escrever os valores dos pixels
+    for (int i = 0; i < image->dim.altura; i++) {
+        for (int j = 0; j < image->dim.largura; j++) {
+            fprintf(file, "%d,", image->pixels[i * image->dim.largura + j].value);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+    return 1; // Sucesso
+}
+
+void flip_vertical_gray(Lista *lista) {
+    // Verificar se há pelo menos uma imagem na lista
+    if (lista->tam == 0) {
+        fprintf(stderr, "Nenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
+        return;
+    }
+
+    // Acessar a última imagem em escala de cinza na lista
+    Elemento *ultimo_elemento = lista->fim;
+    ImageGray *original_img = read_image_gray(ultimo_elemento->filename);
+    if (!original_img) {
+        fprintf(stderr, "Erro ao carregar a última imagem em escala de cinza na lista.\n");
+        return;
+    }
+
+    // Criar uma nova imagem modificada para armazenar o flip vertical
+    ImageGray *modified_img = (ImageGray *)malloc(sizeof(ImageGray));
+    if (!modified_img) {
+        fprintf(stderr, "Erro ao alocar memória para a imagem modificada\n");
+        free_image_gray(original_img); // Liberar a imagem original
+        return;
+    }
+
+    // Copiar as dimensões da imagem original
+    modified_img->dim = original_img->dim;
+
+    // Alocar memória para os pixels da imagem modificada
+    modified_img->pixels = (PixelGray *)malloc(original_img->dim.largura * original_img->dim.altura * sizeof(PixelGray));
+    if (!modified_img->pixels) {
+        fprintf(stderr, "Erro ao alocar memória para os pixels da imagem modificada\n");
+        free_image_gray(original_img); // Liberar a imagem original
+        free(modified_img);
+        return;
+    }
+
+    // Inverter as dimensões da imagem modificada
+    modified_img->dim.altura = original_img->dim.altura;
+    modified_img->dim.largura = original_img->dim.largura;
+
+    // Copiar os valores dos pixels da imagem original e aplicar o flip vertical
+    for (int i = 0; i < original_img->dim.altura; i++) {
+        for (int j = 0; j < original_img->dim.largura; j++) {
+            // Atribuir o valor do pixel correspondente da imagem original ao pixel correspondente na imagem modificada,
+            // mas invertendo a ordem das linhas para realizar o flip vertical
+            modified_img->pixels[i * original_img->dim.largura + j].value = original_img->pixels[(original_img->dim.altura - 1 - i) * original_img->dim.largura + j].value;
+        }
+    }
+
+    // Criar um novo nome de arquivo para a imagem modificada
+    char filename[50];
+    snprintf(filename, sizeof(filename), "alteracao_gray%d.txt", lista->tam + 1);
+
+    // Escrever a imagem modificada em um arquivo
+    if (write_image_gray(filename, modified_img)) {
+        // Adicionar o nome do arquivo à lista encadeada
+        adicionar_no_lista(lista, filename);
+        printf("Flip vertical aplicado à última imagem em escala de cinza carregada e salvo em %s.\n", filename);
+    } else {
+        fprintf(stderr, "Erro ao salvar a imagem modificada.\n");
+    }
+
+    // Liberar a memória alocada
+    free_image_gray(original_img);
+    free_image_gray(modified_img);
+}

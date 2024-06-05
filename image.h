@@ -40,6 +40,8 @@ void adicionar_no_lista(Lista *lista, const char *filename);
 void liberar_lista(Lista *lista);
 void percorrer_lista(Lista *lista);
 
+int write_image_gray(const char *filename, ImageGray *image);
+
 // Funções de leitura de arquivo
 ImageGray *read_image_gray(const char *filename);
 ImageRGB *read_image_rgb(const char *filename);
@@ -52,7 +54,7 @@ void create_image_rgb(ImageRGB *img, Lista *lista);
 void free_image_rgb(ImageRGB *image);
 
 // Operações para ImageGray
-ImageGray *flip_vertical_gray(ImageGray *image);
+void flip_vertical_gray(Lista *lista);
 ImageGray *flip_horizontal_gray(ImageGray *image);
 ImageGray *transpose_Gray(const ImageGray *image);
 
