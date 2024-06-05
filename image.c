@@ -15,7 +15,8 @@ Lista *criaLista()
 void adicionar_no_lista(Lista *lista, const char *filename)
 {
     Elemento *novo = (Elemento *)malloc(sizeof(Elemento));
-    if (!novo) {
+    if (!novo)
+    {
         fprintf(stderr, "Erro ao alocar memoria para o elemento\n");
         return;
     }
@@ -48,9 +49,10 @@ void liberar_lista(Lista *lista)
     free(lista);
 }
 
-void percorrer_lista(Lista *lista) {
+void percorrer_lista(Lista *lista){
     Elemento *atual = lista->inicio;
-    while (atual != NULL) {
+    while (atual != NULL)
+    {
         printf("%s\n", atual->filename);
         atual = atual->prox;
     }
@@ -172,6 +174,8 @@ void create_image_gray(ImageGray *img, Lista *lista)
     // chamar a struct (que estara com os novos valores), e preencher o arquivo
     // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
     // adicionar ao encadeamento, no final
+    
+
     char filename[50];
     snprintf(filename, sizeof(filename), "alteracao_gray%d.txt", lista->tam + 1);
 
@@ -193,22 +197,6 @@ void create_image_gray(ImageGray *img, Lista *lista)
     }
 
     fclose(file);
-
-    // Adiciona a imagem à lista
-    ImageGray *nova_imagem = (ImageGray *)malloc(sizeof(ImageGray));
-    if (!nova_imagem) {
-        fprintf(stderr, "Erro ao alocar memoria para a nova imagem\n");
-        return;
-    }
-    *nova_imagem = *img;
-    nova_imagem->pixels = (PixelGray *)malloc(img->dim.altura * img->dim.largura * sizeof(PixelGray));
-    if (!nova_imagem->pixels) {
-        fprintf(stderr, "Erro ao alocar memoria para os pixels da nova imagem\n");
-        free(nova_imagem);
-        return;
-    }
-    memcpy(nova_imagem->pixels, img->pixels, img->dim.altura * img->dim.largura * sizeof(PixelGray));
-
     adicionar_no_lista(lista, filename);
 }
 
@@ -229,6 +217,9 @@ void create_image_rgb(ImageRGB *img, Lista *lista)
     // chamar a struct (que estara com os novos valores), e preencher o arquivo
     // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
     // adicionar ao encadeamento, no final
+
+    
+
     char filename[50];
     snprintf(filename, sizeof(filename), "alteracao_rgb%d.txt", lista->tam + 1);
 
@@ -239,32 +230,19 @@ void create_image_rgb(ImageRGB *img, Lista *lista)
         return;
     }
 
-    fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
+     fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
     for (int i = 0; i < img->dim.altura; i++)
     {
         for (int j = 0; j < img->dim.largura; j++)
         {
-            fprintf(file, "%d %d %d,", img->pixels[i * img->dim.largura + j].red, img->pixels[i * img->dim.largura + j].green, img->pixels[i * img->dim.largura + j].blue);
+            fprintf(file, "%d %d %d,", img->pixels[i * img->dim.largura + j].red,
+                                      img->pixels[i * img->dim.largura + j].green,
+                                      img->pixels[i * img->dim.largura + j].blue);
         }
         fprintf(file, "\n");
     }
 
     fclose(file);
-
-    // Adiciona a imagem à lista
-    ImageRGB *nova_imagem = (ImageRGB *)malloc(sizeof(ImageRGB));
-    if (!nova_imagem) {
-        fprintf(stderr, "Erro ao alocar memoria para a nova imagem\n");
-        return;
-    }
-    *nova_imagem = *img;
-    nova_imagem->pixels = (PixelRGB *)malloc(img->dim.altura * img->dim.largura * sizeof(PixelRGB));
-    if (!nova_imagem->pixels) {
-        fprintf(stderr, "Erro ao alocar memoria para os pixels da nova imagem\n");
-        free(nova_imagem);
-        return;
-    }
-    memcpy(nova_imagem->pixels, img->pixels, img->dim.altura * img->dim.largura * sizeof(PixelRGB));
 
     adicionar_no_lista(lista, filename);
 }
@@ -278,9 +256,10 @@ void free_image_rgb(ImageRGB *image)
     }
 }
 
-int write_image_gray(const char *filename, ImageGray *image) {
+int write_image_gray(const char *filename, ImageGray *image){
     FILE *file = fopen(filename, "w");
-    if (!file) {
+    if (!file)
+    {
         fprintf(stderr, "Erro ao abrir o arquivo %s para escrita.\n", filename);
         return 0;
     }
@@ -289,8 +268,10 @@ int write_image_gray(const char *filename, ImageGray *image) {
     fprintf(file, "%d\n%d\n", image->dim.altura, image->dim.largura);
 
     // Escrever os valores dos pixels
-    for (int i = 0; i < image->dim.altura; i++) {
-        for (int j = 0; j < image->dim.largura; j++) {
+    for (int i = 0; i < image->dim.altura; i++)
+    {
+        for (int j = 0; j < image->dim.largura; j++)
+        {
             fprintf(file, "%d,", image->pixels[i * image->dim.largura + j].value);
         }
         fprintf(file, "\n");
@@ -300,9 +281,11 @@ int write_image_gray(const char *filename, ImageGray *image) {
     return 1; // Sucesso
 }
 
-void flip_vertical_gray(Lista *lista) {
+void flip_vertical_gray(Lista *lista)
+{
     // Verificar se há pelo menos uma imagem na lista
-    if (lista->tam == 0) {
+    if (lista->tam == 0)
+    {
         fprintf(stderr, "Nenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
         return;
     }
@@ -310,14 +293,16 @@ void flip_vertical_gray(Lista *lista) {
     // Acessar a última imagem em escala de cinza na lista
     Elemento *ultimo_elemento = lista->fim;
     ImageGray *original_img = read_image_gray(ultimo_elemento->filename);
-    if (!original_img) {
+    if (!original_img)
+    {
         fprintf(stderr, "Erro ao carregar a última imagem em escala de cinza na lista.\n");
         return;
     }
 
     // Criar uma nova imagem modificada para armazenar o flip vertical
     ImageGray *modified_img = (ImageGray *)malloc(sizeof(ImageGray));
-    if (!modified_img) {
+    if (!modified_img)
+    {
         fprintf(stderr, "Erro ao alocar memória para a imagem modificada\n");
         free_image_gray(original_img); // Liberar a imagem original
         return;
@@ -328,7 +313,8 @@ void flip_vertical_gray(Lista *lista) {
 
     // Alocar memória para os pixels da imagem modificada
     modified_img->pixels = (PixelGray *)malloc(original_img->dim.largura * original_img->dim.altura * sizeof(PixelGray));
-    if (!modified_img->pixels) {
+    if (!modified_img->pixels)
+    {
         fprintf(stderr, "Erro ao alocar memória para os pixels da imagem modificada\n");
         free_image_gray(original_img); // Liberar a imagem original
         free(modified_img);
@@ -340,8 +326,10 @@ void flip_vertical_gray(Lista *lista) {
     modified_img->dim.largura = original_img->dim.largura;
 
     // Copiar os valores dos pixels da imagem original e aplicar o flip vertical
-    for (int i = 0; i < original_img->dim.altura; i++) {
-        for (int j = 0; j < original_img->dim.largura; j++) {
+    for (int i = 0; i < original_img->dim.altura; i++)
+    {
+        for (int j = 0; j < original_img->dim.largura; j++)
+        {
             // Atribuir o valor do pixel correspondente da imagem original ao pixel correspondente na imagem modificada,
             // mas invertendo a ordem das linhas para realizar o flip vertical
             modified_img->pixels[i * original_img->dim.largura + j].value = original_img->pixels[(original_img->dim.altura - 1 - i) * original_img->dim.largura + j].value;
@@ -353,15 +341,53 @@ void flip_vertical_gray(Lista *lista) {
     snprintf(filename, sizeof(filename), "alteracao_gray%d.txt", lista->tam + 1);
 
     // Escrever a imagem modificada em um arquivo
-    if (write_image_gray(filename, modified_img)) {
+    if (write_image_gray(filename, modified_img))
+    {
         // Adicionar o nome do arquivo à lista encadeada
         adicionar_no_lista(lista, filename);
         printf("Flip vertical aplicado à última imagem em escala de cinza carregada e salvo em %s.\n", filename);
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "Erro ao salvar a imagem modificada.\n");
     }
 
     // Liberar a memória alocada
     free_image_gray(original_img);
     free_image_gray(modified_img);
+}
+
+void *flip_vertical_rgb(const ImageRGB *image, Lista *lista)
+{
+    ImageRGB *imgflip = (ImageRGB *)malloc(sizeof(ImageRGB));
+    if (!imgflip)
+    {
+        fprintf(stderr, "Erro ao alocar memoria para a imagem modificada\n");
+        return NULL;
+    }
+
+    imgflip->dim = image->dim;
+
+    imgflip->pixels = (PixelRGB *)malloc(image->dim.largura * image->dim.altura * sizeof(PixelRGB));
+    if (!imgflip->pixels)
+    {
+        fprintf(stderr, "Erro ao alocar memoria para os pixels da imagem modificada\n");
+        free(imgflip);
+        return NULL; // Adicionei o retorno de NULL em caso de erro.
+    }
+
+    for (int i = 0; i < image->dim.altura; i++)
+    {
+        for (int j = 0; j < image->dim.largura; j++)
+        {
+            // Atribuir o valor do pixel correspondente da imagem original ao pixel correspondente na imagem modificada,
+            // mas invertendo a ordem das linhas para realizar o flip vertical
+            imgflip->pixels[i * image->dim.largura + j].red = image->pixels[(image->dim.altura - 1 - i) * image->dim.largura + j].red;
+            imgflip->pixels[i * image->dim.largura + j].green = image->pixels[(image->dim.altura - 1 - i) * image->dim.largura + j].green;
+            imgflip->pixels[i * image->dim.largura + j].blue = image->pixels[(image->dim.altura - 1 - i) * image->dim.largura + j].blue;
+        }
+    }
+
+    create_image_rgb(imgflip, lista);
+    return imgflip;
 }
