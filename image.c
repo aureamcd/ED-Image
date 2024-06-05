@@ -287,107 +287,108 @@ void flip_vertical_gray(Lista *lista)
     if (lista->tam == 0)
     {
         fprintf(stderr, "Nenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
-        return;
+        return ;
     }
 
     // Acessar a última imagem em escala de cinza na lista
     Elemento *ultimo_elemento = lista->fim;
-    ImageGray *original_img = read_image_gray(ultimo_elemento->filename);
-    if (!original_img)
+    ImageGray *original = read_image_gray(ultimo_elemento->filename);
+    if (!original)
     {
         fprintf(stderr, "Erro ao carregar a última imagem em escala de cinza na lista.\n");
         return;
     }
 
     // Criar uma nova imagem modificada para armazenar o flip vertical
-    ImageGray *modified_img = (ImageGray *)malloc(sizeof(ImageGray));
-    if (!modified_img)
+    ImageGray *nova_img = (ImageGray *)malloc(sizeof(ImageGray));
+    if (!nova_img)
     {
         fprintf(stderr, "Erro ao alocar memória para a imagem modificada\n");
-        free_image_gray(original_img); // Liberar a imagem original
+        free_image_gray(original); // Liberar a imagem original
         return;
     }
 
     // Copiar as dimensões da imagem original
-    modified_img->dim = original_img->dim;
+    nova_img->dim = original->dim;
 
     // Alocar memória para os pixels da imagem modificada
-    modified_img->pixels = (PixelGray *)malloc(original_img->dim.largura * original_img->dim.altura * sizeof(PixelGray));
-    if (!modified_img->pixels)
+    nova_img->pixels = (PixelGray *)malloc(original->dim.largura * original->dim.altura * sizeof(PixelGray));
+    if (!nova_img->pixels)
     {
         fprintf(stderr, "Erro ao alocar memória para os pixels da imagem modificada\n");
-        free_image_gray(original_img); // Liberar a imagem original
-        free(modified_img);
+        free_image_gray(original); // Liberar a imagem original
+        free(nova_img);
         return;
     }
 
-    // Inverter as dimensões da imagem modificada
-    modified_img->dim.altura = original_img->dim.altura;
-    modified_img->dim.largura = original_img->dim.largura;
-
     // Copiar os valores dos pixels da imagem original e aplicar o flip vertical
-    for (int i = 0; i < original_img->dim.altura; i++)
+    for (int i = 0; i < original->dim.altura; i++)
     {
-        for (int j = 0; j < original_img->dim.largura; j++)
+        for (int j = 0; j < original->dim.largura; j++)
         {
             // Atribuir o valor do pixel correspondente da imagem original ao pixel correspondente na imagem modificada,
             // mas invertendo a ordem das linhas para realizar o flip vertical
-            modified_img->pixels[i * original_img->dim.largura + j].value = original_img->pixels[(original_img->dim.altura - 1 - i) * original_img->dim.largura + j].value;
+            nova_img->pixels[i * original->dim.largura + j].value = original->pixels[(original->dim.altura - 1 - i) * original->dim.largura + j].value;
         }
     }
 
-    // Criar um novo nome de arquivo para a imagem modificada
-    char filename[50];
-    snprintf(filename, sizeof(filename), "alteracao_gray%d.txt", lista->tam + 1);
-
-    // Escrever a imagem modificada em um arquivo
-    if (write_image_gray(filename, modified_img))
-    {
-        // Adicionar o nome do arquivo à lista encadeada
-        adicionar_no_lista(lista, filename);
-        printf("Flip vertical aplicado à última imagem em escala de cinza carregada e salvo em %s.\n", filename);
-    }
-    else
-    {
-        fprintf(stderr, "Erro ao salvar a imagem modificada.\n");
-    }
+    create_image_gray(nova_img, lista);
 
     // Liberar a memória alocada
-    free_image_gray(original_img);
-    free_image_gray(modified_img);
+    free_image_gray(nova_img); // Liberar a imagem modificada
+    free_image_gray(original); // Liberar a imagem original
 }
 
-void *flip_vertical_rgb(const ImageRGB *image, Lista *lista)
+void flip_vertical_rgb(Lista *lista)
 {
+    // Verificar se há pelo menos uma imagem na lista
+    if (lista->tam == 0)
+    {
+        fprintf(stderr, "Nenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
+        return;
+    }
+
+    // Acessar o último elemento da lista
+    Elemento *ultimo_elemento = lista->fim;
+    ImageRGB *original = read_image_rgb(ultimo_elemento->filename);
+    if (!original)
+    {
+        fprintf(stderr, "Erro ao carregar a última imagem RGB na lista.\n");
+        return;
+    }
+
     ImageRGB *imgflip = (ImageRGB *)malloc(sizeof(ImageRGB));
     if (!imgflip)
     {
-        fprintf(stderr, "Erro ao alocar memoria para a imagem modificada\n");
-        return NULL;
+        fprintf(stderr, "Erro ao alocar memória para a imagem modificada\n");
+        free_image_rgb(original); // Liberar a imagem original
+        return;
     }
 
-    imgflip->dim = image->dim;
+    imgflip->dim = original->dim;
 
-    imgflip->pixels = (PixelRGB *)malloc(image->dim.largura * image->dim.altura * sizeof(PixelRGB));
+    imgflip->pixels = (PixelRGB *)malloc(original->dim.largura * original->dim.altura * sizeof(PixelRGB));
     if (!imgflip->pixels)
     {
-        fprintf(stderr, "Erro ao alocar memoria para os pixels da imagem modificada\n");
+        fprintf(stderr, "Erro ao alocar memória para os pixels da imagem modificada\n");
+        free_image_rgb(original); // Liberar a imagem original
         free(imgflip);
-        return NULL; // Adicionei o retorno de NULL em caso de erro.
+        return;
     }
 
-    for (int i = 0; i < image->dim.altura; i++)
+    for (int i = 0; i < original->dim.altura; i++)
     {
-        for (int j = 0; j < image->dim.largura; j++)
+        for (int j = 0; j < original->dim.largura; j++)
         {
             // Atribuir o valor do pixel correspondente da imagem original ao pixel correspondente na imagem modificada,
             // mas invertendo a ordem das linhas para realizar o flip vertical
-            imgflip->pixels[i * image->dim.largura + j].red = image->pixels[(image->dim.altura - 1 - i) * image->dim.largura + j].red;
-            imgflip->pixels[i * image->dim.largura + j].green = image->pixels[(image->dim.altura - 1 - i) * image->dim.largura + j].green;
-            imgflip->pixels[i * image->dim.largura + j].blue = image->pixels[(image->dim.altura - 1 - i) * image->dim.largura + j].blue;
+            imgflip->pixels[i * original->dim.largura + j].red = original->pixels[(original->dim.altura - 1 - i) * original->dim.largura + j].red;
+            imgflip->pixels[i * original->dim.largura + j].green = original->pixels[(original->dim.altura - 1 - i) * original->dim.largura + j].green;
+            imgflip->pixels[i * original->dim.largura + j].blue = original->pixels[(original->dim.altura - 1 - i) * original->dim.largura + j].blue;
         }
     }
 
     create_image_rgb(imgflip, lista);
-    return imgflip;
+
+    // Liberar a memória alocada
 }
