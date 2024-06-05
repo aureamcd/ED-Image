@@ -49,7 +49,8 @@ void liberar_lista(Lista *lista)
     free(lista);
 }
 
-void percorrer_lista(Lista *lista){
+void percorrer_lista(Lista *lista)
+{
     Elemento *atual = lista->inicio;
     while (atual != NULL)
     {
@@ -174,7 +175,6 @@ void create_image_gray(ImageGray *img, Lista *lista)
     // chamar a struct (que estara com os novos valores), e preencher o arquivo
     // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
     // adicionar ao encadeamento, no final
-    
 
     char filename[50];
     snprintf(filename, sizeof(filename), "alteracao_gray%d.txt", lista->tam + 1);
@@ -218,8 +218,6 @@ void create_image_rgb(ImageRGB *img, Lista *lista)
     // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
     // adicionar ao encadeamento, no final
 
-    
-
     char filename[50];
     snprintf(filename, sizeof(filename), "alteracao_rgb%d.txt", lista->tam + 1);
 
@@ -230,14 +228,14 @@ void create_image_rgb(ImageRGB *img, Lista *lista)
         return;
     }
 
-     fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
+    fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
     for (int i = 0; i < img->dim.altura; i++)
     {
         for (int j = 0; j < img->dim.largura; j++)
         {
             fprintf(file, "%d %d %d,", img->pixels[i * img->dim.largura + j].red,
-                                      img->pixels[i * img->dim.largura + j].green,
-                                      img->pixels[i * img->dim.largura + j].blue);
+                    img->pixels[i * img->dim.largura + j].green,
+                    img->pixels[i * img->dim.largura + j].blue);
         }
         fprintf(file, "\n");
     }
@@ -256,7 +254,8 @@ void free_image_rgb(ImageRGB *image)
     }
 }
 
-int write_image_gray(const char *filename, ImageGray *image){
+int write_image_gray(const char *filename, ImageGray *image)
+{
     FILE *file = fopen(filename, "w");
     if (!file)
     {
@@ -315,4 +314,28 @@ void flip_vertical_rgb(Lista *lista, ImageRGB *img)
 
     // Atualizar a imagem na lista
     create_image_rgb(img, lista);
+}
+
+void transpose_Gray(Lista *lista, ImageGray *img)
+{
+    // Aplicar o transpose na própria imagem
+
+    PixelGray *transposed_pixels = malloc(img->dim.altura * img->dim.largura * sizeof(PixelGray));
+
+    for (int i = 0; i < img->dim.altura; i++)
+    {
+        for (int j = 0; j < img->dim.largura; j++)
+        {
+            transposed_pixels[j * img->dim.altura + i] = img->pixels[i * img->dim.largura + j];
+        }
+    }
+
+    img->dim.altura = img->dim.altura ^ img->dim.largura;
+    img->dim.largura = img->dim.altura ^ img->dim.largura;
+    img->dim.altura = img->dim.altura ^ img->dim.largura;
+
+    img->pixels = transposed_pixels;
+
+    // Atualizar a imagem na lista
+    create_image_gray(img, lista);
 }
