@@ -54,12 +54,12 @@ void create_image_rgb(ImageRGB *img, Lista *lista);
 void free_image_rgb(ImageRGB *image);
 
 // Operações para ImageGray
-void flip_vertical_gray(Lista *lista);
+void flip_vertical_gray(Lista *lista,ImageGray *image);
 ImageGray *flip_horizontal_gray(ImageGray *image);
 ImageGray *transpose_Gray(const ImageGray *image);
 
 // Operações para ImageRGB
-void flip_vertical_rgb(Lista *lista);
+void flip_vertical_rgb(Lista *lista,ImageRGB *image);
 ImageRGB *flip_horizontal_rgb(const ImageRGB *image);
 ImageRGB *transpose_RGB(const ImageRGB *image);
 

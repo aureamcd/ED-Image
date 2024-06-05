@@ -57,7 +57,7 @@ int main()
                         if (lista_gray->tam > 0)
                         {
                             printf("\nFlip vertical aplicado.\n");
-                            flip_vertical_gray(lista_gray);
+                            flip_vertical_gray(lista_gray,image_gray);
                         }
                         else
                         {
@@ -114,7 +114,7 @@ int main()
                         if (lista_rgb->tam > 0)
                         {
                             printf("\nFlip vertical aplicado.\n");
-                            flip_vertical_rgb(lista_rgb);
+                            flip_vertical_rgb(lista_rgb,image_rgb);
                         }
                         else
                         {
