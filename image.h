@@ -32,43 +32,42 @@ typedef struct elemento {
 typedef struct lista {
     Elemento *inicio;
     Elemento *fim;
-    int tam;
+    int tam;    
 } Lista;
 
+
 Lista *criaLista();
-void adicionar_no_lista(Lista *lista, const char *filename);
+void adicionar_no_lista(Lista *lista, char *filename);
 void liberar_lista(Lista *lista);
 void percorrer_lista(Lista *lista);
 
-int write_image_gray(const char *filename, ImageGray *image);
-
 // Funções de leitura de arquivo
-ImageGray *read_image_gray(const char *filename);
-ImageRGB *read_image_rgb(const char *filename);
+ImageGray *read_image_gray(char *filename);
+ImageRGB *read_image_rgb(char *filename);
 
 // Funções de criação e liberação
-void create_image_gray(ImageGray *img, Lista *lista);
+ImageGray *create_image_gray(ImageGray *image, Lista *lista, char *filename_gray);
 void free_image_gray(ImageGray *image);
 
-void create_image_rgb(ImageRGB *img, Lista *lista);
+ImageRGB *create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 void free_image_rgb(ImageRGB *image);
 
 // Operações para ImageGray
-void flip_vertical_gray(Lista *lista,ImageGray *image);
-void flip_horizontal_gray(Lista * lista,ImageGray *image);
-void transpose_Gray(Lista *lista, ImageGray *img);
+ImageGray *flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray);
+ImageGray *flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray);
+ImageGray *transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray);
 
 // Operações para ImageRGB
-void flip_vertical_rgb(Lista *lista,ImageRGB *image);
-ImageRGB *flip_horizontal_rgb(const ImageRGB *image);
-ImageRGB *transpose_RGB(const ImageRGB *image);
+ImageRGB *flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
+ImageRGB *flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
+ImageRGB *transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb);
 
 // Manipulação por pixel para ImageGray
-ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
-ImageGray *median_blur_gray(const ImageGray *image, int kernel_size);
+ImageGray *clahe_gray(ImageGray *image, int tile_width, int tile_height);
+ImageGray *median_blur_gray(ImageGray *image, int kernel_size);
 
 // Manipulação por pixel para ImageRGB
-ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height);
-ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size);
+ImageRGB *clahe_rgb(ImageRGB *image, int tile_width, int tile_height);
+ImageRGB *median_blur_rgb(ImageRGB *image, int kernel_size);
 
 #endif // IMAGE_H
