@@ -53,14 +53,21 @@ def image_rgb_from_txt(txt_path, output_path):
         # Salva a imagem resultante
         nova_imagem.save(output_path)
 
-image_gray_from_txt("gray.txt", "imagem_gray.png")
-image_gray_from_txt("alteracao_gray1.txt", "imagem_gray1.png")
-image_gray_from_txt("alteracao_gray2.txt", "imagem_gray2.png")
-image_gray_from_txt("alteracao_gray3.txt", "imagem_gray3.png")
-image_gray_from_txt("alteracao_gray4.txt", "imagem_gray4.png")
+image_gray_from_txt("gray.txt1", "gray1.png")
+image_gray_from_txt("gray.txt2", "gray2.png")
+image_gray_from_txt("gray.txt3", "gray3.png")
+image_gray_from_txt("gray.txt4", "gray4.png")
+image_gray_from_txt("gray.txt5", "gray5.png")
+image_gray_from_txt("gray.txt6", "gray6.png")
+
+image_rgb_from_txt("rgb.txt1", "rgb1.png")
+image_rgb_from_txt("rgb.txt2", "rgb2.png")
+image_rgb_from_txt("rgb.txt3", "rgb3.png")
+image_rgb_from_txt("rgb.txt4", "rgb4.png")
+image_rgb_from_txt("rgb.txt5", "rgb5.png")
+image_rgb_from_txt("rgb.txt6", "rgb6.png")
+image_rgb_from_txt("rgb.txt7", "rgb7.png")
+image_rgb_from_txt("rgb.txt8", "rgb8.png")
 
 
-'''image_rgb_from_txt("rgb.txt", "imagem_rgb.png")
-image_rgb_from_txt("alteracao_rgb1.txt", "imagem_rgb1.png")
-image_rgb_from_txt("alteracao_rgb2.txt", "imagem_rgb2.png")
-image_rgb_from_txt("alteracao_rgb3.txt", "imagem_rgb3.png")'''
+
