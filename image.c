@@ -12,13 +12,13 @@ Lista *criaLista()
     return lista;
 }
 
-void adicionar_no_lista(Lista *lista, const char *filename)
+void adicionar_no_lista(Lista *lista, char *filename)
 {
     Elemento *novo = (Elemento *)malloc(sizeof(Elemento));
     if (!novo)
     {
-        fprintf(stderr, "Erro ao alocar memoria para o elemento\n");
-        return;
+        printf("Erro ao alocar memoria para o elemento\n");
+        exit(1);
     }
     strncpy(novo->filename, filename, sizeof(novo->filename) - 1);
     novo->filename[sizeof(novo->filename) - 1] = '\0';
@@ -59,39 +59,39 @@ void percorrer_lista(Lista *lista)
     }
 }
 
-ImageGray *read_image_gray(const char *filename)
+ImageGray *read_image_gray(char *filename)
 {
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        fprintf(stderr, "Erro ao abrir o arquivo %s\n", filename);
-        return NULL;
+        printf("Erro ao abrir o arquivo %s\n", filename);
+        exit(1);
     }
 
     Dimensoes dim;
     if (fscanf(file, "%d", &dim.altura) != 1 || fscanf(file, "%d", &dim.largura) != 1)
     {
-        fprintf(stderr, "Erro ao ler as dimensoes da imagem\n");
+        printf("Erro ao ler as dimensoes da imagem\n");
         fclose(file);
-        return NULL;
+        exit(1);
     }
 
     ImageGray *image = (ImageGray *)malloc(sizeof(ImageGray));
     if (!image)
     {
-        fprintf(stderr, "Erro ao alocar memoria para a imagem\n");
+        printf("Erro ao alocar memoria para a imagem\n");
         fclose(file);
-        return NULL;
+        exit(1);
     }
 
     image->dim = dim;
     image->pixels = (PixelGray *)malloc(dim.largura * dim.altura * sizeof(PixelGray));
     if (!image->pixels)
     {
-        fprintf(stderr, "Erro ao alocar memoria para os pixels\n");
+        printf("Erro ao alocar memoria para os pixels\n");
         free(image);
         fclose(file);
-        return NULL;
+        exit(1);
     }
 
     for (int i = 0; i < dim.largura * dim.altura; i++)
@@ -99,11 +99,11 @@ ImageGray *read_image_gray(const char *filename)
         int pixel_value;
         if (fscanf(file, "%d,", &pixel_value) != 1)
         {
-            fprintf(stderr, "Erro ao ler o valor do pixel no indice %d\n", i);
+            printf("Erro ao ler o valor do pixel no indice %d\n", i);
             free(image->pixels);
             free(image);
             fclose(file);
-            return NULL;
+            exit(1);
         }
         image->pixels[i].value = pixel_value;
     }
@@ -112,39 +112,39 @@ ImageGray *read_image_gray(const char *filename)
     return image;
 }
 
-ImageRGB *read_image_rgb(const char *filename)
+ImageRGB *read_image_rgb(char *filename)
 {
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        fprintf(stderr, "Erro ao abrir o arquivo %s\n", filename);
-        return NULL;
+        printf("Erro ao abrir o arquivo %s\n", filename);
+        exit(1);
     }
 
     Dimensoes dim;
     if (fscanf(file, "%d", &dim.altura) != 1 || fscanf(file, "%d", &dim.largura) != 1)
     {
-        fprintf(stderr, "Erro ao ler as dimensoes da imagem\n");
+        printf("Erro ao ler as dimensoes da imagem\n");
         fclose(file);
-        return NULL;
+        exit(1);
     }
 
     ImageRGB *image = (ImageRGB *)malloc(sizeof(ImageRGB));
     if (!image)
     {
-        fprintf(stderr, "Erro ao alocar memoria para a imagem\n");
+        printf("Erro ao alocar memoria para a imagem\n");
         fclose(file);
-        return NULL;
+        exit(1);
     }
 
     image->dim = dim;
     image->pixels = (PixelRGB *)malloc(dim.largura * dim.altura * sizeof(PixelRGB));
     if (!image->pixels)
     {
-        fprintf(stderr, "Erro ao alocar memoria para os pixels\n");
+        printf("Erro ao alocar memoria para os pixels\n");
         free(image);
         fclose(file);
-        return NULL;
+        exit(1);
     }
 
     for (int i = 0; i < dim.largura * dim.altura; i++)
@@ -152,11 +152,11 @@ ImageRGB *read_image_rgb(const char *filename)
         int red, green, blue;
         if (fscanf(file, "%d %d %d,", &red, &green, &blue) != 3)
         {
-            fprintf(stderr, "Erro ao ler os valores dos canais de cor RGB no indice %d\n", i);
+            printf("Erro ao ler os valores dos canais de cor RGB no indice %d\n", i);
             free(image->pixels);
             free(image);
             fclose(file);
-            return NULL;
+            exit(1);
         }
         image->pixels[i].red = red;
         image->pixels[i].green = green;
@@ -167,7 +167,7 @@ ImageRGB *read_image_rgb(const char *filename)
     return image;
 }
 
-void create_image_gray(ImageGray *img, Lista *lista)
+ImageGray *create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
     // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
@@ -177,27 +177,29 @@ void create_image_gray(ImageGray *img, Lista *lista)
     // adicionar ao encadeamento, no final
 
     char filename[50];
-    snprintf(filename, sizeof(filename), "alteracao_gray%d.txt", lista->tam + 1);
+    snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam + 1);
 
     FILE *file = fopen(filename, "w");
     if (!file)
     {
-        fprintf(stderr, "Erro ao criar o arquivo %s\n", filename);
-        return;
+        printf("Erro ao criar o arquivo %s\n", filename);
+        exit(1);
     }
 
-    fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
-    for (int i = 0; i < img->dim.altura; i++)
+    fprintf(file, "%d\n%d\n", image->dim.altura, image->dim.largura);
+    for (int i = 0; i < image->dim.altura; i++)
     {
-        for (int j = 0; j < img->dim.largura; j++)
+        for (int j = 0; j < image->dim.largura; j++)
         {
-            fprintf(file, "%d,", img->pixels[i * img->dim.largura + j].value);
+            fprintf(file, "%d,", image->pixels[i * image->dim.largura + j].value);
         }
         fprintf(file, "\n");
     }
 
     fclose(file);
     adicionar_no_lista(lista, filename);
+
+    return image;
 }
 
 void free_image_gray(ImageGray *image)
@@ -209,7 +211,7 @@ void free_image_gray(ImageGray *image)
     }
 }
 
-void create_image_rgb(ImageRGB *img, Lista *lista)
+ImageRGB *create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
     // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
@@ -219,23 +221,23 @@ void create_image_rgb(ImageRGB *img, Lista *lista)
     // adicionar ao encadeamento, no final
 
     char filename[50];
-    snprintf(filename, sizeof(filename), "alteracao_rgb%d.txt", lista->tam + 1);
+    snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam + 1);
 
     FILE *file = fopen(filename, "w");
     if (!file)
     {
-        fprintf(stderr, "Erro ao criar o arquivo %s\n", filename);
-        return;
+        printf("Erro ao criar o arquivo %s\n", filename);
+        exit(1);
     }
 
-    fprintf(file, "%d\n%d\n", img->dim.altura, img->dim.largura);
-    for (int i = 0; i < img->dim.altura; i++)
+    fprintf(file, "%d\n%d\n", image->dim.altura, image->dim.largura);
+    for (int i = 0; i < image->dim.altura; i++)
     {
-        for (int j = 0; j < img->dim.largura; j++)
+        for (int j = 0; j < image->dim.largura; j++)
         {
-            fprintf(file, "%d %d %d,", img->pixels[i * img->dim.largura + j].red,
-                    img->pixels[i * img->dim.largura + j].green,
-                    img->pixels[i * img->dim.largura + j].blue);
+            fprintf(file, "%d %d %d,", image->pixels[i * image->dim.largura + j].red,
+                    image->pixels[i * image->dim.largura + j].green,
+                    image->pixels[i * image->dim.largura + j].blue);
         }
         fprintf(file, "\n");
     }
@@ -243,6 +245,8 @@ void create_image_rgb(ImageRGB *img, Lista *lista)
     fclose(file);
 
     adicionar_no_lista(lista, filename);
+
+    return image;
 }
 
 void free_image_rgb(ImageRGB *image)
@@ -254,111 +258,137 @@ void free_image_rgb(ImageRGB *image)
     }
 }
 
-int write_image_gray(const char *filename, ImageGray *image)
+ImageGray *flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
-    FILE *file = fopen(filename, "w");
-    if (!file)
+    // Aplicar o flip vertical na própria imagem
+    for (int i = 0; i < image->dim.altura / 2; i++)
     {
-        fprintf(stderr, "Erro ao abrir o arquivo %s para escrita.\n", filename);
-        return 0;
+        for (int j = 0; j < image->dim.largura; j++)
+        {
+            // Trocar os pixels entre as linhas i e altura-i-1
+            int temp = image->pixels[i * image->dim.largura + j].value;
+            image->pixels[i * image->dim.largura + j].value = image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j].value;
+            image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j].value = temp;
+        }
     }
 
-    // Escrever as dimensões da imagem
-    fprintf(file, "%d\n%d\n", image->dim.altura, image->dim.largura);
+    // Atualizar a imagem na lista
+    create_image_gray(image, lista, filename_gray);
+    return image;
+}
 
-    // Escrever os valores dos pixels
+ImageGray *flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
+{
+
+    for (int i = 0; i < image->dim.altura; i++)
+    {
+        for (int j = 0; j < image->dim.largura / 2; j++)
+        {
+            // Calcular os índices dos pixels a serem trocados
+            int idx1 = i * image->dim.largura + j;
+            int idx2 = i * image->dim.largura + (image->dim.largura - j - 1);
+
+            // Trocar os pixels entre as colunas j e largura-j-1
+            int temp = image->pixels[idx1].value;
+            image->pixels[idx1].value = image->pixels[idx2].value;
+            image->pixels[idx2].value = temp;
+        }
+    }
+
+    // Atualizar a imagem na lista
+    create_image_gray(image, lista, filename_gray);
+    return image;
+}
+
+ImageGray *transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray)
+{
+    // Aplicar o transpose na própria imagem
+
+    PixelGray *transpose_pixels = malloc(image->dim.altura * image->dim.largura * sizeof(PixelGray));
+
     for (int i = 0; i < image->dim.altura; i++)
     {
         for (int j = 0; j < image->dim.largura; j++)
         {
-            fprintf(file, "%d,", image->pixels[i * image->dim.largura + j].value);
+            transpose_pixels[j * image->dim.altura + i] = image->pixels[i * image->dim.largura + j];
         }
-        fprintf(file, "\n");
     }
 
-    fclose(file);
-    return 1; // Sucesso
+    image->dim.altura = image->dim.altura ^ image->dim.largura;
+    image->dim.largura = image->dim.altura ^ image->dim.largura;
+    image->dim.altura = image->dim.altura ^ image->dim.largura;
+
+    image->pixels = transpose_pixels;
+
+    // Atualizar a imagem na lista
+    create_image_gray(image, lista, filename_gray);
+    return image;
 }
 
-void flip_vertical_gray(Lista *lista, ImageGray *img)
+ImageRGB *flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     // Aplicar o flip vertical na própria imagem
-    for (int i = 0; i < img->dim.altura / 2; i++)
+    for (int i = 0; i < image->dim.altura / 2; i++)
     {
-        for (int j = 0; j < img->dim.largura; j++)
+        for (int j = 0; j < image->dim.largura; j++)
         {
             // Trocar os pixels entre as linhas i e altura-i-1
-            int temp = img->pixels[i * img->dim.largura + j].value;
-            img->pixels[i * img->dim.largura + j].value = img->pixels[(img->dim.altura - i - 1) * img->dim.largura + j].value;
-            img->pixels[(img->dim.altura - i - 1) * img->dim.largura + j].value = temp;
+            PixelRGB temp = image->pixels[i * image->dim.largura + j];
+            image->pixels[i * image->dim.largura + j] = image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j];
+            image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j] = temp;
         }
     }
 
     // Atualizar a imagem na lista
-    create_image_gray(img, lista);
+    create_image_rgb(image, lista, filename_rgb);
+
+    return image;
 }
 
-void flip_vertical_rgb(Lista *lista, ImageRGB *img)
+ImageRGB *flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
-    // Aplicar o flip vertical na própria imagem
-    for (int i = 0; i < img->dim.altura / 2; i++)
-    {
-        for (int j = 0; j < img->dim.largura; j++)
-        {
-            // Trocar os pixels entre as linhas i e altura-i-1
-            PixelRGB temp = img->pixels[i * img->dim.largura + j];
-            img->pixels[i * img->dim.largura + j] = img->pixels[(img->dim.altura - i - 1) * img->dim.largura + j];
-            img->pixels[(img->dim.altura - i - 1) * img->dim.largura + j] = temp;
-        }
-    }
 
-    // Atualizar a imagem na lista
-    create_image_rgb(img, lista);
-}
-
-void flip_horizontal_gray(Lista *lista, ImageGray *img)
-{
-   
-    for (int i = 0; i < img->dim.altura; i++)
+    for (int i = 0; i < image->dim.altura; i++)
     {
-        for (int j = 0; j < img->dim.largura / 2; j++)
+        for (int j = 0; j < image->dim.largura / 2; j++)
         {
             // Calcular os índices dos pixels a serem trocados
-            int idx1 = i * img->dim.largura + j;
-            int idx2 = i * img->dim.largura + (img->dim.largura - j - 1);
+            int idx1 = i * image->dim.largura + j;
+            int idx2 = i * image->dim.largura + (image->dim.largura - j - 1);
 
             // Trocar os pixels entre as colunas j e largura-j-1
-            int temp = img->pixels[idx1].value;
-            img->pixels[idx1].value = img->pixels[idx2].value;
-            img->pixels[idx2].value = temp;
+            PixelRGB temp = image->pixels[idx1];
+            image->pixels[idx1] = image->pixels[idx2];
+            image->pixels[idx2] = temp;
         }
     }
 
     // Atualizar a imagem na lista
-    create_image_gray(img, lista);
+    create_image_rgb(image, lista, filename_rgb);
+    return image;
 }
 
-
-void transpose_Gray(Lista *lista, ImageGray *img)
+ImageRGB *transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     // Aplicar o transpose na própria imagem
 
-    PixelGray *transposed_pixels = malloc(img->dim.altura * img->dim.largura * sizeof(PixelGray));
+    PixelRGB *transpose_pixels = malloc(image->dim.altura * image->dim.largura * sizeof(PixelRGB));
 
-    for (int i = 0; i < img->dim.altura; i++)
+    for (int i = 0; i < image->dim.altura; i++)
     {
-        for (int j = 0; j < img->dim.largura; j++)
+        for (int j = 0; j < image->dim.largura; j++)
         {
-            transposed_pixels[j * img->dim.altura + i] = img->pixels[i * img->dim.largura + j];
+            transpose_pixels[j * image->dim.altura + i] = image->pixels[i * image->dim.largura + j];
         }
     }
 
-    img->dim.altura = img->dim.altura ^ img->dim.largura;
-    img->dim.largura = img->dim.altura ^ img->dim.largura;
-    img->dim.altura = img->dim.altura ^ img->dim.largura;
+    image->dim.altura = image->dim.altura ^ image->dim.largura;
+    image->dim.largura = image->dim.altura ^ image->dim.largura;
+    image->dim.altura = image->dim.altura ^ image->dim.largura;
 
-    img->pixels = transposed_pixels;
+    image->pixels = transpose_pixels;
 
     // Atualizar a imagem na lista
-    create_image_gray(img, lista);
+    create_image_rgb(image, lista, filename_rgb);
+    return image;
 }
