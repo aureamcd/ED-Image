@@ -131,6 +131,14 @@ int main() {
                                 }
                                 break;
                             case 4:
+                                if (lista_rgb->tam > 0) {
+                                    printf("\nCLAHE aplicado.\n");
+                                    clahe_rgb(image_rgb, lista_rgb, filename_rgb);
+                                } else {
+                                    fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
+                                }
+                                break;
+                            case 5:
                                 break;
                             default:
                                 printf("\nOpcao invalida! Tente novamente.\n");
