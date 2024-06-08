@@ -34,5 +34,3 @@ O objetivo deste projeto é desenvolver uma solução para manipulação de imag
 5. **Observações:**
    - Muitas funções do sistema podem não estar mapeadas, deixando espaço para que o desenvolvedor as implemente conforme necessário.
    - É importante observar atentamente os requisitos mencionados anteriormente para garantir que o sistema atenda às expectativas e funcione conforme o esperado.
-
-

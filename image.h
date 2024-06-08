@@ -46,28 +46,28 @@ ImageGray *read_image_gray(char *filename);
 ImageRGB *read_image_rgb(char *filename);
 
 // Funções de criação e liberação
-ImageGray *create_image_gray(ImageGray *image, Lista *lista, char *filename_gray);
+void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray);
 void free_image_gray(ImageGray *image);
 
-ImageRGB *create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
+void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 void free_image_rgb(ImageRGB *image);
 
 // Operações para ImageGray
-ImageGray *flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray);
-ImageGray *flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray);
-ImageGray *transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray);
+void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray);
+void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray);
+void transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray);
 
 // Operações para ImageRGB
-ImageRGB *flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
-ImageRGB *flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
-ImageRGB *transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb);
+void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
+void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
+void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb);
 
 // Manipulação por pixel para ImageGray
-ImageGray *clahe_gray(ImageGray *image, int tile_width, int tile_height);
-ImageGray *median_blur_gray(ImageGray *image, int kernel_size);
+void clahe_gray(ImageGray *image, int largura, int altura,Lista *lista,char *filename_gray);
+void median_blur_gray(ImageGray *image, int kernel_size);
 
 // Manipulação por pixel para ImageRGB
-ImageRGB *clahe_rgb(ImageRGB *image, int tile_width, int tile_height);
-ImageRGB *median_blur_rgb(ImageRGB *image, int kernel_size);
+void clahe_rgb(ImageRGB *image, int tile_width, int tile_height);
+void median_blur_rgb(ImageRGB *image, int kernel_size);
 
 #endif // IMAGE_H

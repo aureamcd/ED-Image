@@ -167,7 +167,7 @@ ImageRGB *read_image_rgb(char *filename)
     return image;
 }
 
-ImageGray *create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
+void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
     // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
@@ -199,7 +199,6 @@ ImageGray *create_image_gray(ImageGray *image, Lista *lista, char *filename_gray
     fclose(file);
     adicionar_no_lista(lista, filename);
 
-    return image;
 }
 
 void free_image_gray(ImageGray *image)
@@ -211,7 +210,7 @@ void free_image_gray(ImageGray *image)
     }
 }
 
-ImageRGB *create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
     // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
@@ -245,8 +244,6 @@ ImageRGB *create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     fclose(file);
 
     adicionar_no_lista(lista, filename);
-
-    return image;
 }
 
 void free_image_rgb(ImageRGB *image)
@@ -258,7 +255,7 @@ void free_image_rgb(ImageRGB *image)
     }
 }
 
-ImageGray *flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
+void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     // Aplicar o flip vertical na própria imagem
     for (int i = 0; i < image->dim.altura / 2; i++)
@@ -274,12 +271,10 @@ ImageGray *flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gra
 
     // Atualizar a imagem na lista
     create_image_gray(image, lista, filename_gray);
-    return image;
 }
 
-ImageGray *flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
+void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
-
     for (int i = 0; i < image->dim.altura; i++)
     {
         for (int j = 0; j < image->dim.largura / 2; j++)
@@ -297,10 +292,9 @@ ImageGray *flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_g
 
     // Atualizar a imagem na lista
     create_image_gray(image, lista, filename_gray);
-    return image;
 }
 
-ImageGray *transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray)
+void transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     // Aplicar o transpose na própria imagem
 
@@ -322,10 +316,9 @@ ImageGray *transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray)
 
     // Atualizar a imagem na lista
     create_image_gray(image, lista, filename_gray);
-    return image;
 }
 
-ImageRGB *flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     // Aplicar o flip vertical na própria imagem
     for (int i = 0; i < image->dim.altura / 2; i++)
@@ -341,11 +334,9 @@ ImageRGB *flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 
     // Atualizar a imagem na lista
     create_image_rgb(image, lista, filename_rgb);
-
-    return image;
 }
 
-ImageRGB *flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
 
     for (int i = 0; i < image->dim.altura; i++)
@@ -365,10 +356,9 @@ ImageRGB *flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 
     // Atualizar a imagem na lista
     create_image_rgb(image, lista, filename_rgb);
-    return image;
 }
 
-ImageRGB *transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
+void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     // Aplicar o transpose na própria imagem
 
@@ -390,5 +380,99 @@ ImageRGB *transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
 
     // Atualizar a imagem na lista
     create_image_rgb(image, lista, filename_rgb);
-    return image;
+}
+
+void clahe_gray(ImageGray *image, int largura_bloco, int altura_bloco, Lista *lista, char *nome_arquivo) {
+    // Número de bins no histograma
+    const int NUM_BINS = 256;
+
+    // Definindo o número de blocos na imagem
+    int num_blocos_x = (image->dim.largura + largura_bloco - 1) / largura_bloco;
+    int num_blocos_y = (image->dim.altura + altura_bloco - 1) / altura_bloco;
+
+    // Histogramas por bloco
+    int **histogramas = (int **)malloc(num_blocos_y * sizeof(int *));
+    if (!histogramas) {
+        printf("Erro ao alocar memória para os histogramas\n");
+        exit(1);
+    }
+
+    // Calcula histogramas por bloco
+    for (int i = 0; i < num_blocos_y; i++) {
+        histogramas[i] = (int *)calloc(NUM_BINS, sizeof(int));
+        if (!histogramas[i]) {
+            printf("Erro ao alocar memória para o histograma\n");
+            exit(1);
+        }
+
+        // Preenche histograma para o bloco atual
+        for (int j = 0; j < num_blocos_x; j++) {
+            // Inicializa o histograma para este bloco
+            memset(histogramas[i], 0, NUM_BINS * sizeof(int));
+
+            // Calcula os limites do bloco
+            int x_inicio = j * largura_bloco;
+            int x_fim = (j + 1) * largura_bloco;
+            int y_inicio = i * altura_bloco;
+            int y_fim = (i + 1) * altura_bloco;
+
+            // Ajusta limites do bloco se ultrapassar a imagem
+            if (x_fim > image->dim.largura)
+                x_fim = image->dim.largura;
+            if (y_fim > image->dim.altura)
+                y_fim = image->dim.altura;
+
+            // Preenche histograma para o bloco atual
+            for (int y = y_inicio; y < y_fim; y++) {
+                for (int x = x_inicio; x < x_fim; x++) {
+                    int valor_pixel = image->pixels[y * image->dim.largura + x].value;
+                    histogramas[i][valor_pixel]++;
+                }
+            }
+
+            // Acumula histograma para este bloco
+            for (int k = 1; k < NUM_BINS; k++) {
+                histogramas[i][k] += histogramas[i][k - 1];
+            }
+        }
+    }
+
+    // Equaliza blocos com interpolação
+    for (int i = 0; i < num_blocos_y; i++) {
+        for (int j = 0; j < num_blocos_x; j++) {
+            // Define os limites do bloco
+            int x_inicio = j * largura_bloco;
+            int x_fim = (j + 1) * largura_bloco;
+            int y_inicio = i * altura_bloco;
+            int y_fim = (i + 1) * altura_bloco;
+
+            // Ajusta limites do bloco se ultrapassar a imagem
+            if (x_fim > image->dim.largura)
+                x_fim = image->dim.largura;
+            if (y_fim > image->dim.altura)
+                y_fim = image->dim.altura;
+
+            // Equaliza bloco com interpolação
+            for (int y = y_inicio; y < y_fim; y++) {
+                for (int x = x_inicio; x < x_fim; x++) {
+                    int valor_pixel = image->pixels[y * image->dim.largura + x].value;
+
+                    // Calcula o novo valor do pixel com a equalização do histograma
+                    int valor_equalizado = (int)(((float)histogramas[i][valor_pixel] / ((x_fim - x_inicio) * (y_fim - y_inicio))) * (NUM_BINS - 1));
+
+                    // Limita o valor do pixel a 255 (valor máximo desejado)
+                    image->pixels[y * image->dim.largura + x].value = (valor_equalizado > 255) ? 255 : valor_equalizado;
+                }
+            }
+        }
+    }
+
+    // Libera memória dos histogramas
+    for (int i = 0; i < num_blocos_y; i++) {
+        free(histogramas[i]);
+    }
+    free(histogramas);
+
+    // Salva a imagem CLAHE em um arquivo
+    create_image_gray(image, lista, nome_arquivo);
 }
