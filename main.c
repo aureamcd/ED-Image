@@ -74,7 +74,7 @@ int main() {
                             case 4:
                                 if (lista_gray->tam > 0) {
                                     printf("\nCLAHE aplicado.\n");
-                                    clahe_gray(image_gray, 128,128, lista_gray, filename_gray);
+                                    clahe_gray(image_gray, lista_gray, filename_gray);
                                 } else {
                                     fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
                                 }
