@@ -198,7 +198,6 @@ void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
     fclose(file);
     adicionar_no_lista(lista, filename);
-
 }
 
 void free_image_gray(ImageGray *image)
@@ -382,97 +381,101 @@ void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
     create_image_rgb(image, lista, filename_rgb);
 }
 
-void clahe_gray(ImageGray *image, int largura_bloco, int altura_bloco, Lista *lista, char *nome_arquivo) {
-    // Número de bins no histograma
-    const int NUM_BINS = 256;
+void clahe_gray(ImageGray *image, Lista *lista, char *nome_arquivo) {
+    float clip_limit= 3.0;
+    int NUM_BINS = 256;
 
-    // Definindo o número de blocos na imagem
+    int altura_bloco=image->dim.altura;
+    int largura_bloco=image->dim.largura;
+
     int num_blocos_x = (image->dim.largura + largura_bloco - 1) / largura_bloco;
     int num_blocos_y = (image->dim.altura + altura_bloco - 1) / altura_bloco;
 
-    // Histogramas por bloco
-    int **histogramas = (int **)malloc(num_blocos_y * sizeof(int *));
+    int ***histogramas = (int ***)malloc(num_blocos_y * sizeof(int **));
     if (!histogramas) {
         printf("Erro ao alocar memória para os histogramas\n");
         exit(1);
     }
 
-    // Calcula histogramas por bloco
     for (int i = 0; i < num_blocos_y; i++) {
-        histogramas[i] = (int *)calloc(NUM_BINS, sizeof(int));
+        histogramas[i] = (int **)malloc(num_blocos_x * sizeof(int *));
         if (!histogramas[i]) {
-            printf("Erro ao alocar memória para o histograma\n");
+            printf("Erro ao alocar memória para os histogramas\n");
             exit(1);
         }
-
-        // Preenche histograma para o bloco atual
         for (int j = 0; j < num_blocos_x; j++) {
-            // Inicializa o histograma para este bloco
-            memset(histogramas[i], 0, NUM_BINS * sizeof(int));
+            histogramas[i][j] = (int *)calloc(NUM_BINS, sizeof(int));
+            if (!histogramas[i][j]) {
+                printf("Erro ao alocar memória para os histogramas\n");
+                exit(1);
+            }
+        }
+    }
 
-            // Calcula os limites do bloco
+    for (int i = 0; i < num_blocos_y; i++) {
+        for (int j = 0; j < num_blocos_x; j++) {
+            memset(histogramas[i][j], 0, NUM_BINS * sizeof(int));
+
             int x_inicio = j * largura_bloco;
             int x_fim = (j + 1) * largura_bloco;
             int y_inicio = i * altura_bloco;
             int y_fim = (i + 1) * altura_bloco;
 
-            // Ajusta limites do bloco se ultrapassar a imagem
             if (x_fim > image->dim.largura)
                 x_fim = image->dim.largura;
             if (y_fim > image->dim.altura)
                 y_fim = image->dim.altura;
 
-            // Preenche histograma para o bloco atual
             for (int y = y_inicio; y < y_fim; y++) {
                 for (int x = x_inicio; x < x_fim; x++) {
                     int valor_pixel = image->pixels[y * image->dim.largura + x].value;
-                    histogramas[i][valor_pixel]++;
+                    histogramas[i][j][valor_pixel]++;
                 }
             }
 
-            // Acumula histograma para este bloco
+            int limite = (int)(clip_limit * (x_fim - x_inicio) * (y_fim - y_inicio) / NUM_BINS);
+            int excesso = 0;
+
+            for (int k = 0; k < NUM_BINS; k++) {
+                if (histogramas[i][j][k] > limite) {
+                    excesso += histogramas[i][j][k] - limite;
+                    histogramas[i][j][k] = limite;
+                }
+            }
+
+            int incremento = excesso / NUM_BINS;
+            for (int k = 0; k < NUM_BINS; k++) {
+                histogramas[i][j][k] += incremento;
+            }
+
             for (int k = 1; k < NUM_BINS; k++) {
-                histogramas[i][k] += histogramas[i][k - 1];
+                histogramas[i][j][k] += histogramas[i][j][k - 1];
             }
         }
     }
 
-    // Equaliza blocos com interpolação
+    for (int y = 0; y < image->dim.altura; y++) {
+        for (int x = 0; x < image->dim.largura; x++) {
+            int bloco_x = x / largura_bloco;
+            int bloco_y = y / altura_bloco;
+
+            int valor_pixel = image->pixels[y * image->dim.largura + x].value;
+            int total_pixels_bloco = largura_bloco * altura_bloco;
+
+            if (bloco_x < num_blocos_x && bloco_y < num_blocos_y) {
+                int valor_equalizado = (int)(((float)histogramas[bloco_y][bloco_x][valor_pixel] / total_pixels_bloco) * (NUM_BINS - 1));
+                image->pixels[y * image->dim.largura + x].value = (valor_equalizado > 255) ? 255 : valor_equalizado;
+            }
+        }
+    }
+
     for (int i = 0; i < num_blocos_y; i++) {
         for (int j = 0; j < num_blocos_x; j++) {
-            // Define os limites do bloco
-            int x_inicio = j * largura_bloco;
-            int x_fim = (j + 1) * largura_bloco;
-            int y_inicio = i * altura_bloco;
-            int y_fim = (i + 1) * altura_bloco;
-
-            // Ajusta limites do bloco se ultrapassar a imagem
-            if (x_fim > image->dim.largura)
-                x_fim = image->dim.largura;
-            if (y_fim > image->dim.altura)
-                y_fim = image->dim.altura;
-
-            // Equaliza bloco com interpolação
-            for (int y = y_inicio; y < y_fim; y++) {
-                for (int x = x_inicio; x < x_fim; x++) {
-                    int valor_pixel = image->pixels[y * image->dim.largura + x].value;
-
-                    // Calcula o novo valor do pixel com a equalização do histograma
-                    int valor_equalizado = (int)(((float)histogramas[i][valor_pixel] / ((x_fim - x_inicio) * (y_fim - y_inicio))) * (NUM_BINS - 1));
-
-                    // Limita o valor do pixel a 255 (valor máximo desejado)
-                    image->pixels[y * image->dim.largura + x].value = (valor_equalizado > 255) ? 255 : valor_equalizado;
-                }
-            }
+            free(histogramas[i][j]);
         }
-    }
-
-    // Libera memória dos histogramas
-    for (int i = 0; i < num_blocos_y; i++) {
         free(histogramas[i]);
     }
     free(histogramas);
 
-    // Salva a imagem CLAHE em um arquivo
     create_image_gray(image, lista, nome_arquivo);
 }
