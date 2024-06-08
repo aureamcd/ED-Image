@@ -63,11 +63,11 @@ void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb);
 
 // Manipulação por pixel para ImageGray
-void clahe_gray(ImageGray *image, Lista *lista, char *nome_arquivo);
+void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray);
 void median_blur_gray(ImageGray *image, int kernel_size);
 
 // Manipulação por pixel para ImageRGB
-void clahe_rgb(ImageRGB *image, int tile_width, int tile_height);
+void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 void median_blur_rgb(ImageRGB *image, int kernel_size);
 
 #endif // IMAGE_H
