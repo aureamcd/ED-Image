@@ -68,6 +68,6 @@ void median_blur_gray(ImageGray *image, int kernel_size);
 
 // Manipulação por pixel para ImageRGB
 void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
-void median_blur_rgb(ImageRGB *image, int kernel_size);
+void median_blur_rgb(ImageRGB *image, Lista* lista, char *filename_rgb);
 
 #endif // IMAGE_H

@@ -55,9 +55,9 @@ def image_rgb_from_txt(txt_path, output_path):
 
 #txt_from_image_gray("teste.jpg", "teste.txt")
 
-image_gray_from_txt("teste.txt", "gray1.png")
-image_gray_from_txt("teste.txt1", "gray2.png")
-image_gray_from_txt("teste.txt2", "gray3.png")
+# image_gray_from_txt("teste.txt", "gray1.png")
+# image_gray_from_txt("teste.txt1", "gray2.png")
+# image_gray_from_txt("teste.txt2", "gray3.png")
 
 '''image_gray_from_txt("gray.txt1", "gray1.png")
 image_gray_from_txt("gray.txt2", "gray2.png")
@@ -67,9 +67,10 @@ image_gray_from_txt("gray.txt5", "gray5.png")
 image_gray_from_txt("gray.txt6", "gray6.png")
 image_gray_from_txt("gray.txt7", "gray7.png")
 image_gray_from_txt("gray.txt8", "gray8.png")
-
+'''
 image_rgb_from_txt("rgb.txt1", "rgb1.png")
-image_rgb_from_txt("rgb.txt2", "rgb2.png")'''
+image_rgb_from_txt("rgb.txt2", "rgb2.png")
+image_rgb_from_txt("rgb.txt3", "rgb3.png")
 
 
 

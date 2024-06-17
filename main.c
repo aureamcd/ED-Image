@@ -139,13 +139,19 @@ int main() {
                                 }
                                 break;
                             case 5:
+                                if (lista_rgb->tam > 0) {
+                                    printf("\nMedian Blur aplicado.\n");
+                                    median_blur_rgb(image_rgb, lista_rgb, filename_rgb);
+                                } else {
+                                    fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
+                                }
                                 break;
                             default:
                                 printf("\nOpcao invalida! Tente novamente.\n");
                                 break;
                         }
 
-                    } while (opc != 5);
+                    } while (opc != 6);
 
                 } else {
                     fprintf(stderr, "\nErro ao carregar a imagem RGB\n");
