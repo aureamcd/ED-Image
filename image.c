@@ -602,7 +602,7 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
 
     create_image_rgb(image, lista, filename_rgb);
 }
-#include <stdlib.h>
+
 
 // Função auxiliar para comparar pixels (utilizada na ordenação)
 int comparar(const void *a, const void *b) {
@@ -654,3 +654,52 @@ void median_blur_rgb(ImageRGB *image, Lista* lista, char *filename_rgb){
     // Salva a nova imagem e atualiza a lista
     create_image_rgb(image, lista, filename_rgb);
 }
+
+int comparar(const void *a, const void *b) {
+    return *(unsigned char *)a - *(unsigned char *)b;
+}
+
+void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray) {
+    int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
+    int largura = image->dim.largura;
+    int altura = image->dim.altura;
+    unsigned char *pixels = image->pixels;
+
+    int half_kernel = tamanho_kernel / 2;
+    unsigned char *temp_pixels = (unsigned char *)malloc(tamanho_kernel * tamanho_kernel * sizeof(unsigned char));
+
+    if (!temp_pixels) {
+        fprintf(stderr, "Erro ao alocar memória para pixels temporários.\n");
+        return;
+    }
+
+    // Aplica o filtro de median blur
+    for (int y = 0; y < altura; y++) {
+        for (int x = 0; x < largura; x++) {
+            int contador = 0;
+
+            for (int ky = -half_kernel; ky <= half_kernel; ky++) {
+                for (int kx = -half_kernel; kx <= half_kernel; kx++) {
+                    int novo_x = x + kx;
+                    int novo_y = y + ky;
+
+                    if (novo_x >= 0 && novo_x < largura && novo_y >= 0 && novo_y < altura) {
+                        int indice = novo_y * largura + novo_x;
+                        temp_pixels[contador++] = pixels[indice];
+                    }
+                }
+            }
+
+            // Ordena os pixels temporários para encontrar o valor mediano
+            qsort(temp_pixels, contador, sizeof(unsigned char), comparar);
+
+            // Atribui o valor mediano ao pixel atual
+            int indice = y * largura + x;
+            pixels[indice] = temp_pixels[contador / 2];
+        }
+    }
+
+    free(temp_pixels);
+
+    // Atualiza a lista com a nova imagem
+    update_image_gray(image, lista, filename_gray);
