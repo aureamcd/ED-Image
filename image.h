@@ -64,7 +64,7 @@ void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb);
 
 // Manipulação por pixel para ImageGray
 void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray);
-void median_blur_gray(ImageGray *image, int kernel_size);
+void median_blur_gray(ImageGray *image, Lista* lista, char *filename_rgb);
 
 // Manipulação por pixel para ImageRGB
 void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);

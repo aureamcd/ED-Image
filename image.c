@@ -655,7 +655,7 @@ void median_blur_rgb(ImageRGB *image, Lista* lista, char *filename_rgb){
     create_image_rgb(image, lista, filename_rgb);
 }
 
-int comparar(const void *a, const void *b) {
+int compararg(const void *a, const void *b) {
     return *(unsigned char *)a - *(unsigned char *)b;
 }
 
@@ -663,10 +663,10 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray) {
     int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
     int largura = image->dim.largura;
     int altura = image->dim.altura;
-    unsigned char *pixels = image->pixels;
+    PixelGray *pixels = image->pixels;
 
     int half_kernel = tamanho_kernel / 2;
-    unsigned char *temp_pixels = (unsigned char *)malloc(tamanho_kernel * tamanho_kernel * sizeof(unsigned char));
+    PixelGray *temp_pixels = (PixelGray *)malloc(tamanho_kernel * tamanho_kernel * sizeof(PixelGray));
 
     if (!temp_pixels) {
         fprintf(stderr, "Erro ao alocar memória para pixels temporários.\n");
@@ -691,7 +691,7 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray) {
             }
 
             // Ordena os pixels temporários para encontrar o valor mediano
-            qsort(temp_pixels, contador, sizeof(unsigned char), comparar);
+            qsort(temp_pixels, contador, sizeof(unsigned char), compararg);
 
             // Atribui o valor mediano ao pixel atual
             int indice = y * largura + x;
@@ -702,4 +702,5 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray) {
     free(temp_pixels);
 
     // Atualiza a lista com a nova imagem
-    update_image_gray(image, lista, filename_gray);
+    create_image_gray(image, lista, filename_gray);
+}
