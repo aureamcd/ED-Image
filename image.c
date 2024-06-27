@@ -590,7 +590,6 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
                 }
 
                 if (bloco_x < num_blocos_x && bloco_y < num_blocos_y) {
-                    int total_pixels_bloco = largura_bloco * altura_bloco;
                     int valor_equalizado = (int)(((float)histogramas[bloco_y][bloco_x][valor_pixel] / histogramas[bloco_y][bloco_x][NUM_BINS - 1]) * (NUM_BINS - 1));
                     valor_equalizado = (valor_equalizado > 255) ? 255 : valor_equalizado;
 
@@ -705,7 +704,7 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray) {
             }
 
             // Ordena os pixels temporários para encontrar o valor mediano
-            qsort(temp_pixels, contador, sizeof(unsigned char), compararg);
+            qsort(temp_pixels, contador, sizeof(PixelGray), compararg);
 
             // Atribui o valor mediano ao pixel atual
             int indice = y * largura + x;

@@ -144,7 +144,7 @@ int main()
                     {
                         char output_image_gray[100];
                         char altered_filename_gray[100];
-                        snprintf(output_image_gray, sizeof(output_image_gray), "gray%d.png", lista_gray->tam);
+                        snprintf(output_image_gray, sizeof(output_image_gray), "atual_gray.png");
                         snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista_gray->tam);
                         call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, output_image_gray);
                     }
@@ -250,7 +250,7 @@ int main()
                     {
                         char output_image_rgb[100];
                         char altered_filename_rgb[100];
-                        snprintf(output_image_rgb, sizeof(output_image_rgb), "rgb%d.png", lista_rgb->tam);
+                        snprintf(output_image_rgb, sizeof(output_image_rgb), "atual_rgb.png");
                         snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
                         call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, output_image_rgb);
                     }
