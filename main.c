@@ -35,8 +35,6 @@ int main()
 {
     int op;
     int opc;
-    int gray_counter = 1;
-    int rgb_counter = 1;
     char filename_gray[100];
     char filename_rgb[100];
     ImageGray *image_gray = NULL;
@@ -63,10 +61,10 @@ int main()
                 create_image_gray(image_gray, lista_gray, filename_gray);
 
                 char output_image_gray[100];
-                snprintf(output_image_gray, sizeof(output_image_gray), "gray%d.png", gray_counter++);
-                
-                // Chama o script Python para gerar a imagem a partir do arquivo TXT
-                call_python_script("image_utils.py", "image_gray_from_txt", filename_gray, output_image_gray);
+                char altered_filename_gray[100];
+                snprintf(output_image_gray, sizeof(output_image_gray), "gray%d.png", lista_gray->tam);
+                snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista_gray->tam);
+                call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, output_image_gray);
 
                 do
                 {
@@ -144,8 +142,11 @@ int main()
                     // Gera a nova imagem após a alteração
                     if (opc >= 1 && opc <= 5)
                     {
-                        snprintf(output_image_gray, sizeof(output_image_gray), "gray%d.png", gray_counter++);
-                        call_python_script("image_utils.py", "image_gray_from_txt", filename_gray, output_image_gray);
+                        char output_image_gray[100];
+                        char altered_filename_gray[100];
+                        snprintf(output_image_gray, sizeof(output_image_gray), "gray%d.png", lista_gray->tam);
+                        snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista_gray->tam);
+                        call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, output_image_gray);
                     }
 
                 } while (opc != 7);
@@ -166,10 +167,10 @@ int main()
                 create_image_rgb(image_rgb, lista_rgb, filename_rgb);
 
                 char output_image_rgb[100];
-                snprintf(output_image_rgb, sizeof(output_image_rgb), "rgb%d.png", rgb_counter++);
-                
-                // Chama o script Python para gerar a imagem a partir do arquivo TXT
-                call_python_script("image_utils.py", "image_rgb_from_txt", filename_rgb, output_image_rgb);
+                char altered_filename_rgb[100];
+                snprintf(output_image_rgb, sizeof(output_image_rgb), "rgb%d.png", lista_rgb->tam);
+                snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
+                call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, output_image_rgb);
 
                 do
                 {
@@ -247,8 +248,11 @@ int main()
                     // Gera a nova imagem após a alteração
                     if (opc >= 1 && opc <= 5)
                     {
-                        snprintf(output_image_rgb, sizeof(output_image_rgb), "rgb%d.png", rgb_counter++);
-                        call_python_script("image_utils.py", "image_rgb_from_txt", filename_rgb, output_image_rgb);
+                        char output_image_rgb[100];
+                        char altered_filename_rgb[100];
+                        snprintf(output_image_rgb, sizeof(output_image_rgb), "rgb%d.png", lista_rgb->tam);
+                        snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
+                        call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, output_image_rgb);
                     }
 
                 } while (opc != 7);
