@@ -49,8 +49,7 @@ void liberar_lista(Lista *lista)
     free(lista);
 }
 
-void percorrer_lista(Lista *lista)
-{
+void percorrer_lista(Lista *lista){
     Elemento *atual = lista->inicio;
     while (atual != NULL)
     {
@@ -58,6 +57,21 @@ void percorrer_lista(Lista *lista)
         atual = atual->prox;
     }
 }
+
+void imprimir_historico(Lista *lista) {
+    if (lista->tam == 0) {
+        printf("Lista vazia.\n");
+        return;
+    }
+
+    printf("\nHistorico de alteracoes:\n");
+    Elemento *atual = lista->inicio;
+    while (atual != NULL) {
+        printf("%s\n - %s\n", atual->filename, atual->alt);
+        atual = atual->prox;
+    }
+}
+
 
 ImageGray *read_image_gray(char *filename)
 {
