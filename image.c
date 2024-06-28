@@ -261,6 +261,8 @@ void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     fclose(file);
 
     adicionar_no_lista(lista, filename);
+        strcpy(lista->fim->alt, "Original");
+
 }
 
 void free_image_rgb(ImageRGB *image)
