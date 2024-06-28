@@ -12,7 +12,6 @@ void print_menu()
     printf("4. Sair\n");
 }
 
-
 void print_alter()
 {
     printf("\nEscolha uma opcao:\n");
@@ -42,26 +41,6 @@ int main()
     ImageRGB *image_rgb = NULL;
     Lista *lista_gray = criaLista();
     Lista *lista_rgb = criaLista();
-
-    // Inicializa o nó inicial da lista_gray
-    lista_gray->inicio = (Elemento *)malloc(sizeof(Elemento));
-    if (lista_gray->inicio == NULL)
-    {
-        fprintf(stderr, "Erro ao alocar memoria para o nó inicial da lista_gray\n");
-        return 1;
-    }
-    strcpy(lista_gray->inicio->alt, "Original");
-
-    // Inicializa o nó inicial da lista_rgb
-    lista_rgb->inicio = (Elemento *)malloc(sizeof(Elemento));
-    if (lista_rgb->inicio == NULL)
-    {
-        fprintf(stderr, "Erro ao alocar memoria para o nó inicial da lista_rgb\n");
-        return 1;
-    }
-    strcpy(lista_rgb->inicio->alt, "Original");
-
-    printf("%s", lista_gray->inicio->alt);
 
     do
     {
@@ -95,9 +74,6 @@ int main()
                     switch (opc)
                     {
                     case 1:
-                        strcpy(lista_gray->inicio->prox->alt, "Aplicacao Flip Horizontal");
-                            printf("%s", lista_gray->inicio->alt);
-
                         if (lista_gray->tam > 0)
                         {
                             printf("\nFlip horizontal aplicado.\n");
@@ -107,9 +83,11 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
                         }
+
+                        strcpy(lista_gray->fim->alt, "Aplicacao Flip Horizontal");
+                        
                         break;
                     case 2:
-                        strcpy(lista_gray->fim->alt, "Aplicacao Flip Vertical");
 
                         if (lista_gray->tam > 0)
                         {
@@ -120,9 +98,10 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
                         }
+                                                strcpy(lista_gray->fim->alt, "Aplicacao Flip Vertical");
+
                         break;
                     case 3:
-                        strcpy(lista_gray->fim->alt, "Aplicacao Transpose");
 
                         if (lista_gray->tam > 0)
                         {
@@ -133,9 +112,10 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Transpose.\n");
                         }
+                                                strcpy(lista_gray->fim->alt, "Aplicacao Transpose");
+
                         break;
                     case 4:
-                        strcpy(lista_gray->fim->alt, "Aplicacao CLAHE");
 
                         if (lista_gray->tam > 0)
                         {
@@ -146,9 +126,10 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
                         }
+                                                strcpy(lista_gray->fim->alt, "Aplicacao CLAHE");
+
                         break;
                     case 5:
-                        strcpy(lista_gray->fim->alt, "Aplicacao Median Blur");
 
                         if (lista_gray->tam > 0)
                         {
@@ -159,6 +140,8 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Median Blur.\n");
                         }
+                                                strcpy(lista_gray->fim->alt, "Aplicacao Median Blur");
+
                         break;
                     case 6:
                         imprimir_historico(lista_gray);
@@ -208,7 +191,6 @@ int main()
                     switch (opc)
                     {
                     case 1:
-                        strcpy(lista_rgb->fim->alt, "Aplicacao Flip Horizontal");
 
                         if (lista_rgb->tam > 0)
                         {
@@ -219,9 +201,10 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip horizontal.\n");
                         }
+                                                strcpy(lista_rgb->fim->alt, "Aplicacao Flip Horizontal");
+
                         break;
                     case 2:
-                        strcpy(lista_rgb->fim->alt, "Aplicacao Flip Vertical");
 
                         if (lista_rgb->tam > 0)
                         {
@@ -232,9 +215,10 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip vertical.\n");
                         }
+                                                strcpy(lista_rgb->fim->alt, "Aplicacao Flip Vertical");
+
                         break;
                     case 3:
-                        strcpy(lista_rgb->fim->alt, "Aplicacao Transpose");
 
                         if (lista_rgb->tam > 0)
                         {
@@ -245,9 +229,10 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o Transpose.\n");
                         }
+                                                strcpy(lista_rgb->fim->alt, "Aplicacao Transpose");
+
                         break;
                     case 4:
-                        strcpy(lista_rgb->fim->alt, "Aplicacao CLAHE");
 
                         if (lista_rgb->tam > 0)
                         {
@@ -258,9 +243,10 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o CLAHE.\n");
                         }
+                                                strcpy(lista_rgb->fim->alt, "Aplicacao CLAHE");
+
                         break;
                     case 5:
-                        strcpy(lista_rgb->fim->alt, "Aplicacao Median Blur");
 
                         if (lista_rgb->tam > 0)
                         {
@@ -271,6 +257,8 @@ int main()
                         {
                             fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o Median Blur.\n");
                         }
+                                                strcpy(lista_rgb->fim->alt, "Aplicacao Median Blur");
+
                         break;
                     case 6:
                         imprimir_historico(lista_rgb);
