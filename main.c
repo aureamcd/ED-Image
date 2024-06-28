@@ -12,6 +12,7 @@ void print_menu()
     printf("4. Sair\n");
 }
 
+
 void print_alter()
 {
     printf("\nEscolha uma opcao:\n");
@@ -42,6 +43,26 @@ int main()
     Lista *lista_gray = criaLista();
     Lista *lista_rgb = criaLista();
 
+    // Inicializa o nó inicial da lista_gray
+    lista_gray->inicio = (Elemento *)malloc(sizeof(Elemento));
+    if (lista_gray->inicio == NULL)
+    {
+        fprintf(stderr, "Erro ao alocar memoria para o nó inicial da lista_gray\n");
+        return 1;
+    }
+    strcpy(lista_gray->inicio->alt, "Original");
+
+    // Inicializa o nó inicial da lista_rgb
+    lista_rgb->inicio = (Elemento *)malloc(sizeof(Elemento));
+    if (lista_rgb->inicio == NULL)
+    {
+        fprintf(stderr, "Erro ao alocar memoria para o nó inicial da lista_rgb\n");
+        return 1;
+    }
+    strcpy(lista_rgb->inicio->alt, "Original");
+
+    printf("%s", lista_gray->inicio->alt);
+
     do
     {
         print_menu();
@@ -54,17 +75,16 @@ int main()
             printf("\nDigite o nome do arquivo txt da imagem em escala de cinza: ");
             scanf("%s", filename_gray);
             image_gray = read_image_gray(filename_gray);
+
             if (image_gray)
             {
                 printf("\nDimensoes da imagem em escala de cinza: %d x %d\n", image_gray->dim.largura, image_gray->dim.altura);
                 printf("Valor do primeiro pixel em escala de cinza: %d\n", image_gray->pixels[0].value);
                 create_image_gray(image_gray, lista_gray, filename_gray);
 
-                char output_image_gray[100];
                 char altered_filename_gray[100];
-                snprintf(output_image_gray, sizeof(output_image_gray), "gray%d.png", lista_gray->tam);
                 snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista_gray->tam);
-                call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, output_image_gray);
+                call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, "atual_gray.png");
 
                 do
                 {
@@ -75,6 +95,9 @@ int main()
                     switch (opc)
                     {
                     case 1:
+                        strcpy(lista_gray->inicio->prox->alt, "Aplicacao Flip Horizontal");
+                            printf("%s", lista_gray->inicio->alt);
+
                         if (lista_gray->tam > 0)
                         {
                             printf("\nFlip horizontal aplicado.\n");
@@ -86,6 +109,8 @@ int main()
                         }
                         break;
                     case 2:
+                        strcpy(lista_gray->fim->alt, "Aplicacao Flip Vertical");
+
                         if (lista_gray->tam > 0)
                         {
                             printf("\nFlip vertical aplicado.\n");
@@ -97,6 +122,8 @@ int main()
                         }
                         break;
                     case 3:
+                        strcpy(lista_gray->fim->alt, "Aplicacao Transpose");
+
                         if (lista_gray->tam > 0)
                         {
                             printf("\nTranspose aplicado.\n");
@@ -108,6 +135,8 @@ int main()
                         }
                         break;
                     case 4:
+                        strcpy(lista_gray->fim->alt, "Aplicacao CLAHE");
+
                         if (lista_gray->tam > 0)
                         {
                             printf("\nCLAHE aplicado.\n");
@@ -119,6 +148,8 @@ int main()
                         }
                         break;
                     case 5:
+                        strcpy(lista_gray->fim->alt, "Aplicacao Median Blur");
+
                         if (lista_gray->tam > 0)
                         {
                             printf("\nMedian Blur aplicado.\n");
@@ -142,11 +173,9 @@ int main()
                     // Gera a nova imagem após a alteração
                     if (opc >= 1 && opc <= 5)
                     {
-                        char output_image_gray[100];
                         char altered_filename_gray[100];
-                        snprintf(output_image_gray, sizeof(output_image_gray), "atual_gray.png");
                         snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista_gray->tam);
-                        call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, output_image_gray);
+                        call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, "atual_gray.png");
                     }
 
                 } while (opc != 7);
@@ -166,11 +195,9 @@ int main()
                 printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
                 create_image_rgb(image_rgb, lista_rgb, filename_rgb);
 
-                char output_image_rgb[100];
                 char altered_filename_rgb[100];
-                snprintf(output_image_rgb, sizeof(output_image_rgb), "rgb%d.png", lista_rgb->tam);
                 snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
-                call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, output_image_rgb);
+                call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, "atual_rgb.png");
 
                 do
                 {
@@ -181,6 +208,8 @@ int main()
                     switch (opc)
                     {
                     case 1:
+                        strcpy(lista_rgb->fim->alt, "Aplicacao Flip Horizontal");
+
                         if (lista_rgb->tam > 0)
                         {
                             printf("\nFlip horizontal aplicado.\n");
@@ -192,6 +221,8 @@ int main()
                         }
                         break;
                     case 2:
+                        strcpy(lista_rgb->fim->alt, "Aplicacao Flip Vertical");
+
                         if (lista_rgb->tam > 0)
                         {
                             printf("\nFlip vertical aplicado.\n");
@@ -203,6 +234,8 @@ int main()
                         }
                         break;
                     case 3:
+                        strcpy(lista_rgb->fim->alt, "Aplicacao Transpose");
+
                         if (lista_rgb->tam > 0)
                         {
                             printf("\nTranspose aplicado.\n");
@@ -214,6 +247,8 @@ int main()
                         }
                         break;
                     case 4:
+                        strcpy(lista_rgb->fim->alt, "Aplicacao CLAHE");
+
                         if (lista_rgb->tam > 0)
                         {
                             printf("\nCLAHE aplicado.\n");
@@ -225,6 +260,8 @@ int main()
                         }
                         break;
                     case 5:
+                        strcpy(lista_rgb->fim->alt, "Aplicacao Median Blur");
+
                         if (lista_rgb->tam > 0)
                         {
                             printf("\nMedian Blur aplicado.\n");
@@ -248,11 +285,9 @@ int main()
                     // Gera a nova imagem após a alteração
                     if (opc >= 1 && opc <= 5)
                     {
-                        char output_image_rgb[100];
                         char altered_filename_rgb[100];
-                        snprintf(output_image_rgb, sizeof(output_image_rgb), "atual_rgb.png");
                         snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
-                        call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, output_image_rgb);
+                        call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, "atual_rgb.png");
                     }
 
                 } while (opc != 7);
