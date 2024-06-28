@@ -67,10 +67,11 @@ void imprimir_historico(Lista *lista) {
     printf("\nHistorico de alteracoes:\n");
     Elemento *atual = lista->inicio;
     while (atual != NULL) {
-        printf("%s\n - %s\n", atual->filename, atual->alt);
+        printf("%s - %s\n", atual->filename, atual->alt);
         atual = atual->prox;
     }
 }
+
 
 
 ImageGray *read_image_gray(char *filename)
