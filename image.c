@@ -49,7 +49,8 @@ void liberar_lista(Lista *lista)
     free(lista);
 }
 
-void percorrer_lista(Lista *lista){
+void percorrer_lista(Lista *lista)
+{
     Elemento *atual = lista->inicio;
     while (atual != NULL)
     {
@@ -58,21 +59,22 @@ void percorrer_lista(Lista *lista){
     }
 }
 
-void imprimir_historico(Lista *lista) {
-    if (lista->tam == 0) {
+void imprimir_historico(Lista *lista)
+{
+    if (lista->tam == 0)
+    {
         printf("Lista vazia.\n");
         return;
     }
 
     printf("\nHistorico de alteracoes:\n");
     Elemento *atual = lista->inicio;
-    while (atual != NULL) {
+    while (atual != NULL)
+    {
         printf("%s - %s\n", atual->filename, atual->alt);
         atual = atual->prox;
     }
 }
-
-
 
 ImageGray *read_image_gray(char *filename)
 {
@@ -213,6 +215,7 @@ void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
     fclose(file);
     adicionar_no_lista(lista, filename);
+    strcpy(lista->fim->alt, "Original");
 }
 
 void free_image_gray(ImageGray *image)
@@ -396,39 +399,47 @@ void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
     create_image_rgb(image, lista, filename_rgb);
 }
 
-void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray) {
-    float clip_limit= 3.0;
+void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray)
+{
+    float clip_limit = 3.0;
     int NUM_BINS = 256;
 
-    int altura_bloco=image->dim.altura;
-    int largura_bloco=image->dim.largura;
+    int altura_bloco = image->dim.altura;
+    int largura_bloco = image->dim.largura;
 
     int num_blocos_x = (image->dim.largura + largura_bloco - 1) / largura_bloco;
     int num_blocos_y = (image->dim.altura + altura_bloco - 1) / altura_bloco;
 
     int ***histogramas = (int ***)malloc(num_blocos_y * sizeof(int **));
-    if (!histogramas) {
+    if (!histogramas)
+    {
         printf("Erro ao alocar memória para os histogramas\n");
         exit(1);
     }
 
-    for (int i = 0; i < num_blocos_y; i++) {
+    for (int i = 0; i < num_blocos_y; i++)
+    {
         histogramas[i] = (int **)malloc(num_blocos_x * sizeof(int *));
-        if (!histogramas[i]) {
+        if (!histogramas[i])
+        {
             printf("Erro ao alocar memória para os histogramas\n");
             exit(1);
         }
-        for (int j = 0; j < num_blocos_x; j++) {
+        for (int j = 0; j < num_blocos_x; j++)
+        {
             histogramas[i][j] = (int *)calloc(NUM_BINS, sizeof(int));
-            if (!histogramas[i][j]) {
+            if (!histogramas[i][j])
+            {
                 printf("Erro ao alocar memória para os histogramas\n");
                 exit(1);
             }
         }
     }
 
-    for (int i = 0; i < num_blocos_y; i++) {
-        for (int j = 0; j < num_blocos_x; j++) {
+    for (int i = 0; i < num_blocos_y; i++)
+    {
+        for (int j = 0; j < num_blocos_x; j++)
+        {
             memset(histogramas[i][j], 0, NUM_BINS * sizeof(int));
 
             int x_inicio = j * largura_bloco;
@@ -441,8 +452,10 @@ void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray) {
             if (y_fim > image->dim.altura)
                 y_fim = image->dim.altura;
 
-            for (int y = y_inicio; y < y_fim; y++) {
-                for (int x = x_inicio; x < x_fim; x++) {
+            for (int y = y_inicio; y < y_fim; y++)
+            {
+                for (int x = x_inicio; x < x_fim; x++)
+                {
                     int valor_pixel = image->pixels[y * image->dim.largura + x].value;
                     histogramas[i][j][valor_pixel]++;
                 }
@@ -451,41 +464,50 @@ void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray) {
             int limite = (int)(clip_limit * (x_fim - x_inicio) * (y_fim - y_inicio) / NUM_BINS);
             int excesso = 0;
 
-            for (int k = 0; k < NUM_BINS; k++) {
-                if (histogramas[i][j][k] > limite) {
+            for (int k = 0; k < NUM_BINS; k++)
+            {
+                if (histogramas[i][j][k] > limite)
+                {
                     excesso += histogramas[i][j][k] - limite;
                     histogramas[i][j][k] = limite;
                 }
             }
 
             int incremento = excesso / NUM_BINS;
-            for (int k = 0; k < NUM_BINS; k++) {
+            for (int k = 0; k < NUM_BINS; k++)
+            {
                 histogramas[i][j][k] += incremento;
             }
 
-            for (int k = 1; k < NUM_BINS; k++) {
+            for (int k = 1; k < NUM_BINS; k++)
+            {
                 histogramas[i][j][k] += histogramas[i][j][k - 1];
             }
         }
     }
 
-    for (int y = 0; y < image->dim.altura; y++) {
-        for (int x = 0; x < image->dim.largura; x++) {
+    for (int y = 0; y < image->dim.altura; y++)
+    {
+        for (int x = 0; x < image->dim.largura; x++)
+        {
             int bloco_x = x / largura_bloco;
             int bloco_y = y / altura_bloco;
 
             int valor_pixel = image->pixels[y * image->dim.largura + x].value;
             int total_pixels_bloco = largura_bloco * altura_bloco;
 
-            if (bloco_x < num_blocos_x && bloco_y < num_blocos_y) {
+            if (bloco_x < num_blocos_x && bloco_y < num_blocos_y)
+            {
                 int valor_equalizado = (int)(((float)histogramas[bloco_y][bloco_x][valor_pixel] / total_pixels_bloco) * (NUM_BINS - 1));
                 image->pixels[y * image->dim.largura + x].value = (valor_equalizado > 255) ? 255 : valor_equalizado;
             }
         }
     }
 
-    for (int i = 0; i < num_blocos_y; i++) {
-        for (int j = 0; j < num_blocos_x; j++) {
+    for (int i = 0; i < num_blocos_y; i++)
+    {
+        for (int j = 0; j < num_blocos_x; j++)
+        {
             free(histogramas[i][j]);
         }
         free(histogramas[i]);
@@ -495,40 +517,49 @@ void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray) {
     create_image_gray(image, lista, filename_gray);
 }
 
-void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
+void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+{
     float clip_limit = 3.0;
     int NUM_BINS = 256;
 
-    int largura_bloco = image->dim.altura;// Tamanho do bloco
+    int largura_bloco = image->dim.altura; // Tamanho do bloco
     int altura_bloco = image->dim.largura; // Tamanho do bloco
 
     int num_blocos_x = (image->dim.largura + largura_bloco - 1) / largura_bloco;
     int num_blocos_y = (image->dim.altura + altura_bloco - 1) / altura_bloco;
 
     int ***histogramas = (int ***)malloc(num_blocos_y * sizeof(int **));
-    if (!histogramas) {
+    if (!histogramas)
+    {
         printf("Erro ao alocar memória para os histogramas\n");
         exit(1);
     }
 
-    for (int i = 0; i < num_blocos_y; i++) {
+    for (int i = 0; i < num_blocos_y; i++)
+    {
         histogramas[i] = (int **)malloc(num_blocos_x * sizeof(int *));
-        if (!histogramas[i]) {
+        if (!histogramas[i])
+        {
             printf("Erro ao alocar memória para os histogramas\n");
             exit(1);
         }
-        for (int j = 0; j < num_blocos_x; j++) {
+        for (int j = 0; j < num_blocos_x; j++)
+        {
             histogramas[i][j] = (int *)calloc(NUM_BINS, sizeof(int));
-            if (!histogramas[i][j]) {
+            if (!histogramas[i][j])
+            {
                 printf("Erro ao alocar memória para os histogramas\n");
                 exit(1);
             }
         }
     }
 
-    for (int canal = 0; canal < 3; canal++) { // Loop por cada canal de cor (0: Red, 1: Green, 2: Blue)
-        for (int i = 0; i < num_blocos_y; i++) {
-            for (int j = 0; j < num_blocos_x; j++) {
+    for (int canal = 0; canal < 3; canal++)
+    { // Loop por cada canal de cor (0: Red, 1: Green, 2: Blue)
+        for (int i = 0; i < num_blocos_y; i++)
+        {
+            for (int j = 0; j < num_blocos_x; j++)
+            {
                 memset(histogramas[i][j], 0, NUM_BINS * sizeof(int));
 
                 int x_inicio = j * largura_bloco;
@@ -541,14 +572,21 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
                 if (y_fim > image->dim.altura)
                     y_fim = image->dim.altura;
 
-                for (int y = y_inicio; y < y_fim; y++) {
-                    for (int x = x_inicio; x < x_fim; x++) {
+                for (int y = y_inicio; y < y_fim; y++)
+                {
+                    for (int x = x_inicio; x < x_fim; x++)
+                    {
                         int valor_pixel;
-                        if (canal == 0) {
+                        if (canal == 0)
+                        {
                             valor_pixel = image->pixels[y * image->dim.largura + x].red;
-                        } else if (canal == 1) {
+                        }
+                        else if (canal == 1)
+                        {
                             valor_pixel = image->pixels[y * image->dim.largura + x].green;
-                        } else {
+                        }
+                        else
+                        {
                             valor_pixel = image->pixels[y * image->dim.largura + x].blue;
                         }
                         histogramas[i][j][valor_pixel]++;
@@ -558,47 +596,64 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
                 int limite = (int)(clip_limit * (x_fim - x_inicio) * (y_fim - y_inicio) / NUM_BINS);
                 int excesso = 0;
 
-                for (int k = 0; k < NUM_BINS; k++) {
-                    if (histogramas[i][j][k] > limite) {
+                for (int k = 0; k < NUM_BINS; k++)
+                {
+                    if (histogramas[i][j][k] > limite)
+                    {
                         excesso += histogramas[i][j][k] - limite;
                         histogramas[i][j][k] = limite;
                     }
                 }
 
                 int incremento = excesso / NUM_BINS;
-                for (int k = 0; k < NUM_BINS; k++) {
+                for (int k = 0; k < NUM_BINS; k++)
+                {
                     histogramas[i][j][k] += incremento;
                 }
 
-                for (int k = 1; k < NUM_BINS; k++) {
+                for (int k = 1; k < NUM_BINS; k++)
+                {
                     histogramas[i][j][k] += histogramas[i][j][k - 1];
                 }
             }
         }
 
-        for (int y = 0; y < image->dim.altura; y++) {
-            for (int x = 0; x < image->dim.largura; x++) {
+        for (int y = 0; y < image->dim.altura; y++)
+        {
+            for (int x = 0; x < image->dim.largura; x++)
+            {
                 int bloco_x = x / largura_bloco;
                 int bloco_y = y / altura_bloco;
 
                 int valor_pixel;
-                if (canal == 0) {
+                if (canal == 0)
+                {
                     valor_pixel = image->pixels[y * image->dim.largura + x].red;
-                } else if (canal == 1) {
+                }
+                else if (canal == 1)
+                {
                     valor_pixel = image->pixels[y * image->dim.largura + x].green;
-                } else {
+                }
+                else
+                {
                     valor_pixel = image->pixels[y * image->dim.largura + x].blue;
                 }
 
-                if (bloco_x < num_blocos_x && bloco_y < num_blocos_y) {
+                if (bloco_x < num_blocos_x && bloco_y < num_blocos_y)
+                {
                     int valor_equalizado = (int)(((float)histogramas[bloco_y][bloco_x][valor_pixel] / histogramas[bloco_y][bloco_x][NUM_BINS - 1]) * (NUM_BINS - 1));
                     valor_equalizado = (valor_equalizado > 255) ? 255 : valor_equalizado;
 
-                    if (canal == 0) {
+                    if (canal == 0)
+                    {
                         image->pixels[y * image->dim.largura + x].red = valor_equalizado;
-                    } else if (canal == 1) {
+                    }
+                    else if (canal == 1)
+                    {
                         image->pixels[y * image->dim.largura + x].green = valor_equalizado;
-                    } else {
+                    }
+                    else
+                    {
                         image->pixels[y * image->dim.largura + x].blue = valor_equalizado;
                     }
                 }
@@ -606,8 +661,10 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
         }
     }
 
-    for (int i = 0; i < num_blocos_y; i++) {
-        for (int j = 0; j < num_blocos_x; j++) {
+    for (int i = 0; i < num_blocos_y; i++)
+    {
+        for (int j = 0; j < num_blocos_x; j++)
+        {
             free(histogramas[i][j]);
         }
         free(histogramas[i]);
@@ -617,13 +674,14 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
     create_image_rgb(image, lista, filename_rgb);
 }
 
-
 // Função auxiliar para comparar pixels (utilizada na ordenação)
-int comparar(const void *a, const void *b) {
+int comparar(const void *a, const void *b)
+{
     return (*(PixelRGB *)a).red - (*(PixelRGB *)b).red;
 }
 
-void median_blur_rgb(ImageRGB *image, Lista* lista, char *filename_rgb){
+void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+{
     int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
     int largura = image->dim.largura;
     int altura = image->dim.altura;
@@ -632,22 +690,28 @@ void median_blur_rgb(ImageRGB *image, Lista* lista, char *filename_rgb){
     int half_kernel = tamanho_kernel / 2;
     PixelRGB *temp_pixels = (PixelRGB *)malloc(tamanho_kernel * tamanho_kernel * sizeof(PixelRGB));
 
-    if (!temp_pixels) {
+    if (!temp_pixels)
+    {
         fprintf(stderr, "Erro ao alocar memória para pixels temporários.\n");
         return;
     }
 
     // Aplica o filtro de median blur
-    for (int y = 0; y < altura; y++) {
-        for (int x = 0; x < largura; x++) {
+    for (int y = 0; y < altura; y++)
+    {
+        for (int x = 0; x < largura; x++)
+        {
             int contador = 0;
 
-            for (int ky = -half_kernel; ky <= half_kernel; ky++) {
-                for (int kx = -half_kernel; kx <= half_kernel; kx++) {
+            for (int ky = -half_kernel; ky <= half_kernel; ky++)
+            {
+                for (int kx = -half_kernel; kx <= half_kernel; kx++)
+                {
                     int novo_x = x + kx;
                     int novo_y = y + ky;
 
-                    if (novo_x >= 0 && novo_x < largura && novo_y >= 0 && novo_y < altura) {
+                    if (novo_x >= 0 && novo_x < largura && novo_y >= 0 && novo_y < altura)
+                    {
                         int indice = novo_y * largura + novo_x;
                         temp_pixels[contador++] = pixels[indice];
                     }
@@ -669,11 +733,13 @@ void median_blur_rgb(ImageRGB *image, Lista* lista, char *filename_rgb){
     create_image_rgb(image, lista, filename_rgb);
 }
 
-int compararg(const void *a, const void *b) {
+int compararg(const void *a, const void *b)
+{
     return *(unsigned char *)a - *(unsigned char *)b;
 }
 
-void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray) {
+void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
+{
     int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
     int largura = image->dim.largura;
     int altura = image->dim.altura;
@@ -682,22 +748,28 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray) {
     int half_kernel = tamanho_kernel / 2;
     PixelGray *temp_pixels = (PixelGray *)malloc(tamanho_kernel * tamanho_kernel * sizeof(PixelGray));
 
-    if (!temp_pixels) {
+    if (!temp_pixels)
+    {
         fprintf(stderr, "Erro ao alocar memória para pixels temporários.\n");
         return;
     }
 
     // Aplica o filtro de median blur
-    for (int y = 0; y < altura; y++) {
-        for (int x = 0; x < largura; x++) {
+    for (int y = 0; y < altura; y++)
+    {
+        for (int x = 0; x < largura; x++)
+        {
             int contador = 0;
 
-            for (int ky = -half_kernel; ky <= half_kernel; ky++) {
-                for (int kx = -half_kernel; kx <= half_kernel; kx++) {
+            for (int ky = -half_kernel; ky <= half_kernel; ky++)
+            {
+                for (int kx = -half_kernel; kx <= half_kernel; kx++)
+                {
                     int novo_x = x + kx;
                     int novo_y = y + ky;
 
-                    if (novo_x >= 0 && novo_x < largura && novo_y >= 0 && novo_y < altura) {
+                    if (novo_x >= 0 && novo_x < largura && novo_y >= 0 && novo_y < altura)
+                    {
                         int indice = novo_y * largura + novo_x;
                         temp_pixels[contador++] = pixels[indice];
                     }
