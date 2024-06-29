@@ -3,301 +3,129 @@
 #include <string.h>
 #include "image.h"
 
-void print_menu()
-{
-    printf("\nEscolha uma opcao:\n");
-    printf("1. Carregar txt em escala de cinza (Gray)\n");
-    printf("2. Carregar txt RGB\n");
-    printf("3. Carregar imagem\n");
-    printf("4. Sair\n");
-}
-
-void print_alter()
-{
-    printf("\nEscolha uma opcao:\n");
-    printf("1. Aplicar flip horizontal\n");
-    printf("2. Aplicar flip vertical\n");
-    printf("3. Aplicar transpose\n");
-    printf("4. Aplicar CLAHE\n");
-    printf("5. Aplicar MEDIAN\n");
-    printf("6. Imprimir historico\n");
-    printf("7. Voltar ao menu principal\n");
-}
-
-void call_python_script(const char *script_name, const char *function, const char *txt_file, const char *output_image)
-{
-    char command[256];
-    snprintf(command, sizeof(command), "python %s %s %s %s", script_name, function, txt_file, output_image);
-    system(command);
-}
-
 int main()
 {
     int op;
-    int opc;
+    char opc;
     char filename_gray[100];
     char filename_rgb[100];
     ImageGray *image_gray = NULL;
     ImageRGB *image_rgb = NULL;
     Lista *lista_gray = criaLista();
     Lista *lista_rgb = criaLista();
+    char nomen[100];
+    char nomea[100];
 
     do
     {
-        print_menu();
-        printf("\nDigite sua escolha: ");
-        scanf("%d", &op);
 
-        switch (op)
+        do
         {
-        case 1:
-            printf("\nDigite o nome do arquivo txt da imagem em escala de cinza: ");
-            scanf("%s", filename_gray);
-            image_gray = read_image_gray(filename_gray);
+            print_menu();
+            printf("\nDigite sua escolha: ");
+            scanf("%d", &op);
 
-            if (image_gray)
+            switch (op)
             {
-                printf("\nDimensoes da imagem em escala de cinza: %d x %d\n", image_gray->dim.largura, image_gray->dim.altura);
-                printf("Valor do primeiro pixel em escala de cinza: %d\n", image_gray->pixels[0].value);
-                create_image_gray(image_gray, lista_gray, filename_gray);
+            case 1:
 
-                char altered_filename_gray[100];
-                snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista_gray->tam);
-                call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, "atual_gray.png");
+                printf("\nDigite o nome do arquivo txt da imagem em escala de cinza: ");
+                scanf("%s", filename_gray);
+                image_gray = read_image_gray(filename_gray);
 
-                do
+                if (image_gray)
                 {
-                    print_alter();
-                    printf("\nDigite sua escolha: ");
-                    scanf("%d", &opc);
+                    printf("\nDimensoes da imagem em escala de cinza: %d x %d\n", image_gray->dim.largura, image_gray->dim.altura);
+                    printf("Valor do primeiro pixel em escala de cinza: %d\n", image_gray->pixels[0].value);
+                    create_image_gray(image_gray, lista_gray, filename_gray);
 
-                    switch (opc)
+                    swit_gray(lista_gray, image_gray, filename_gray);
+
+                    // Após aplicar a edição
+                    char base_name[100]; // Declare base_name_gray como array de caracteres
+                    strcpy(base_name, filename_gray);
+                    char *dot = strrchr(base_name, '.');
+                    if (dot != NULL && strcmp(dot, ".txt") == 0)
                     {
-                    case 1:
-                        if (lista_gray->tam > 0)
-                        {
-                            printf("\nFlip horizontal aplicado.\n");
-                            flip_horizontal_gray(image_gray, lista_gray, filename_gray);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
-                        }
-
-                        strcpy(lista_gray->fim->alt, "Aplicacao Flip Horizontal");
-                        
-                        break;
-                    case 2:
-
-                        if (lista_gray->tam > 0)
-                        {
-                            printf("\nFlip vertical aplicado.\n");
-                            flip_vertical_gray(image_gray, lista_gray, filename_gray);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
-                        }
-                                                strcpy(lista_gray->fim->alt, "Aplicacao Flip Vertical");
-
-                        break;
-                    case 3:
-
-                        if (lista_gray->tam > 0)
-                        {
-                            printf("\nTranspose aplicado.\n");
-                            transpose_Gray(image_gray, lista_gray, filename_gray);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Transpose.\n");
-                        }
-                                                strcpy(lista_gray->fim->alt, "Aplicacao Transpose");
-
-                        break;
-                    case 4:
-
-                        if (lista_gray->tam > 0)
-                        {
-                            printf("\nCLAHE aplicado.\n");
-                            clahe_gray(image_gray, lista_gray, filename_gray);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
-                        }
-                                                strcpy(lista_gray->fim->alt, "Aplicacao CLAHE");
-
-                        break;
-                    case 5:
-
-                        if (lista_gray->tam > 0)
-                        {
-                            printf("\nMedian Blur aplicado.\n");
-                            median_blur_gray(image_gray, lista_gray, filename_gray);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Median Blur.\n");
-                        }
-                                                strcpy(lista_gray->fim->alt, "Aplicacao Median Blur");
-
-                        break;
-                    case 6:
-                        imprimir_historico(lista_gray);
-                        break;
-                    case 7:
-                        break;
-                    default:
-                        printf("Opcao invalida.\n");
-                        break;
+                        *dot = '\0';
                     }
 
-                    // Gera a nova imagem após a alteração
-                    if (opc >= 1 && opc <= 5)
-                    {
-                        char altered_filename_gray[100];
-                        snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista_gray->tam);
-                        call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, "atual_gray.png");
-                    }
+                    sprintf(nomea, "%s_%d.txt", base_name, lista_gray->tam);
+                    sprintf(nomen, "%s_final.txt", base_name);
 
-                } while (opc != 7);
-            }
-            else
-            {
-                fprintf(stderr, "\nErro ao carregar a imagem em escala de cinza\n");
-            }
-            break;
-        case 2:
-            printf("\nDigite o nome do arquivo txt da imagem RGB: ");
-            scanf("%s", filename_rgb);
-            image_rgb = read_image_rgb(filename_rgb);
-            if (image_rgb)
-            {
-                printf("\nDimensoes da imagem RGB: %d x %d\n", image_rgb->dim.largura, image_rgb->dim.altura);
-                printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
-                create_image_rgb(image_rgb, lista_rgb, filename_rgb);
+                    rename(nomea, nomen);
 
-                char altered_filename_rgb[100];
-                snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
-                call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, "atual_rgb.png");
+                    printf("Edicao finalizada!!\n\nTXT final: %s_final.txt\nImagem: %s_final.png",
+                           base_name, base_name);
 
-                do
+                    printf("\n\nEditar nova imagem? (s/n): ");
+                    scanf(" %c", &opc);
+                    getchar(); // Captura o caractere newline residual
+                }
+
+                liberar_lista(lista_gray);
+                break;
+
+            case 2:
+
+                printf("\nDigite o nome do arquivo txt da imagem RGB: ");
+                scanf("%s", filename_rgb);
+                image_rgb = read_image_rgb(filename_rgb);
+
+                if (image_rgb)
                 {
-                    print_alter();
-                    printf("\nDigite sua escolha: ");
-                    scanf("%d", &opc);
+                    printf("\nDimensoes da imagem RGB: %d x %d\n", image_rgb->dim.largura, image_rgb->dim.altura);
+                    printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
+                    create_image_rgb(image_rgb, lista_rgb, filename_rgb);
 
-                    switch (opc)
+                    char altered_filename_rgb[100];
+                    snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
+                    call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, "atual_rgb.png");
+
+                    swit_rgb(lista_rgb, image_rgb, filename_rgb);
+
+                    // Após aplicar a edição
+                    char base_name[100]; // Declare base_name_gray como array de caracteres
+                    strcpy(base_name, filename_rgb);
+                    char *dot = strrchr(base_name, '.');
+                    if (dot != NULL && strcmp(dot, ".txt") == 0)
                     {
-                    case 1:
-
-                        if (lista_rgb->tam > 0)
-                        {
-                            printf("\nFlip horizontal aplicado.\n");
-                            flip_horizontal_rgb(image_rgb, lista_rgb, filename_rgb);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip horizontal.\n");
-                        }
-                                                strcpy(lista_rgb->fim->alt, "Aplicacao Flip Horizontal");
-
-                        break;
-                    case 2:
-
-                        if (lista_rgb->tam > 0)
-                        {
-                            printf("\nFlip vertical aplicado.\n");
-                            flip_vertical_rgb(image_rgb, lista_rgb, filename_rgb);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip vertical.\n");
-                        }
-                                                strcpy(lista_rgb->fim->alt, "Aplicacao Flip Vertical");
-
-                        break;
-                    case 3:
-
-                        if (lista_rgb->tam > 0)
-                        {
-                            printf("\nTranspose aplicado.\n");
-                            transpose_RGB(image_rgb, lista_rgb, filename_rgb);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o Transpose.\n");
-                        }
-                                                strcpy(lista_rgb->fim->alt, "Aplicacao Transpose");
-
-                        break;
-                    case 4:
-
-                        if (lista_rgb->tam > 0)
-                        {
-                            printf("\nCLAHE aplicado.\n");
-                            clahe_rgb(image_rgb, lista_rgb, filename_rgb);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o CLAHE.\n");
-                        }
-                                                strcpy(lista_rgb->fim->alt, "Aplicacao CLAHE");
-
-                        break;
-                    case 5:
-
-                        if (lista_rgb->tam > 0)
-                        {
-                            printf("\nMedian Blur aplicado.\n");
-                            median_blur_rgb(image_rgb, lista_rgb, filename_rgb);
-                        }
-                        else
-                        {
-                            fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o Median Blur.\n");
-                        }
-                                                strcpy(lista_rgb->fim->alt, "Aplicacao Median Blur");
-
-                        break;
-                    case 6:
-                        imprimir_historico(lista_rgb);
-                        break;
-                    case 7:
-                        break;
-                    default:
-                        printf("Opcao invalida.\n");
-                        break;
+                        *dot = '\0';
                     }
 
-                    // Gera a nova imagem após a alteração
-                    if (opc >= 1 && opc <= 5)
-                    {
-                        char altered_filename_rgb[100];
-                        snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista_rgb->tam);
-                        call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, "atual_rgb.png");
-                    }
+                    sprintf(nomea, "%s_%d.txt", base_name, lista_rgb->tam);
+                    sprintf(nomen, "%s_final.txt", base_name);
 
-                } while (opc != 7);
+                    rename(nomea, nomen);
+
+                    printf("Edicao finalizada!!\n\nTXT final: %s_final.txt\nImagem: %s_final.png",
+                           base_name, base_name);
+
+                    printf("\n\nEditar nova imagem? (s/n): ");
+                    scanf(" %c", &opc);
+                    getchar(); // Captura o caractere newline residual
+
+                    liberar_lista(lista_rgb);
+                    break;
+                }
+
+            case 3:
+                // Implementar leitura e processamento de imagem semelhante aos casos anteriores
+                printf("Opção 3 selecionada - implementar leitura e processamento de imagem.\n");
+                break;
+
+            case 4:
+                liberar_lista(lista_gray);
+                liberar_lista(lista_rgb);
+                printf("Programa encerrado.\n");
+                return 0;
+
+            default:
+                printf("\nOpcao invalida! Tente novamente.\n");
+                break;
             }
-            else
-            {
-                fprintf(stderr, "\nErro ao carregar a imagem RGB\n");
-            }
-            break;
-        case 3:
-            // Implementar leitura e processamento de imagem semelhante aos casos anteriores
-            break;
-        case 4:
-            liberar_lista(lista_gray);
-            liberar_lista(lista_rgb);
-            return 0;
-        default:
-            printf("\nOpcao invalida! Tente novamente.\n");
-            break;
-        }
+        } while (op != 4);
+    } while (opc == 's');
 
-    } while (op != 4);
-
-    return 0;
+return 0;
 }
