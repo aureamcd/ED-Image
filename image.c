@@ -1079,3 +1079,57 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
     }
     strcpy(lista->fim->alt, "Aplicacao Median Blur");
 }
+
+// void remover_ultimo_lista(Lista *lista)
+// {
+//     if (lista->tam == 0)
+//     {
+//         printf("Lista vazia, não há elementos para remover.\n");
+//         return;
+//     }
+
+//     Elemento *ultimo = lista->fim;
+//     Elemento *anterior = ultimo->ant;
+
+//     if (anterior != NULL)
+//     {
+//         anterior->prox = NULL;
+//         lista->fim = anterior;
+//     }
+//     else
+//     {
+//         // Isso significa que estamos removendo o único elemento da lista
+//         lista->inicio = NULL;
+//         lista->fim = NULL;
+//     }
+
+//     free(ultimo);
+//     lista->tam--;
+// }
+
+// Elemento *encontrar_elemento(Lista *lista, char *filename)
+// {
+//     if (lista->tam == 0)
+//     {
+//         printf("Lista vazia, não há elementos para encontrar.\n");
+//         return NULL;
+//     }
+
+//     Elemento *atual = lista->inicio;
+
+//     // Busca pelo nó com o filename especificado
+//     while (atual != NULL && strcmp(atual->filename, filename) != 0)
+//     {
+//         atual = atual->prox;
+//     }
+
+//     if (atual == NULL)
+//     {
+//         printf("Elemento com filename '%s' não encontrado na lista.\n", filename);
+//         return NULL;
+//     }
+
+//     // Retorna o ponteiro para o elemento encontrado
+//     return atual;
+// }
+
