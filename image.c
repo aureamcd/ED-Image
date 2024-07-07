@@ -14,7 +14,6 @@ void print_menu()
 
 void print_alter()
 {
-   
 
     printf("\nEscolha uma opcao:\n");
     printf("1. Aplicar flip horizontal\n");
@@ -35,7 +34,7 @@ void print_hist()
     printf("7. Voltar ao menu principal\n");
 }
 
-void swit_hist(Lista *lista)
+void swit_hist_gray(Lista *lista, ImageGray *image_gray)
 {
     int op;
     printf("Digite a opcao:");
@@ -47,8 +46,8 @@ void swit_hist(Lista *lista)
         imprimir_historico(lista);
         break;
     case 2:
-        imprimir_historico(lista);
-        // alterar_ed(lista);
+
+        added_gray(lista, image_gray);
         break;
     default:
         printf("Opção inválida.\n");
@@ -76,7 +75,7 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
             break;
 
         case 3:
-            transpose_Gray(image_gray, lista, filename);
+            transpose_gray(image_gray, lista, filename);
             break;
         case 4:
             clahe_gray(image_gray, lista, filename);
@@ -88,7 +87,7 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
 
         case 6:
             print_hist();
-            swit_hist(lista);
+            swit_hist_gray(lista, image_gray);
             break;
 
         case 7:
@@ -120,7 +119,7 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
             break;
 
         case 3:
-            transpose_RGB(image_rgb, lista, filename);
+            transpose_rgb(image_rgb, lista, filename);
             break;
 
         case 4:
@@ -133,7 +132,7 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
 
         case 6:
             print_hist();
-            swit_hist(lista);
+            // swit_hist(lista);
             break;
 
         case 7:
@@ -222,49 +221,25 @@ void imprimir_historico(Lista *lista)
     Elemento *atual = lista->inicio;
     while (atual != NULL)
     {
-        printf("%s - %s\n", atual->filename, atual->alt);
+        printf("%s%s\n", atual->filename, atual->alt);
         atual = atual->prox;
     }
 }
 
-// void add_ed(Lista *lista)
-// {
-//     char txt;
-//     int op;
-//     int opc;
-//     printf("Digite o nome do TXT:");
-//     scanf(" %s", txt);
+void added_gray(Lista *lista, ImageGray *image_gray)
+{
+    char txt[50];
+    imprimir_historico(lista);
 
-//     for (int i = 0; i < ; i++)
-//     {
-//         /* code */
-//     }
+    printf("Digite o nome do TXT:");
+    scanf(" %s", txt);
 
-//     if (op < 1 || op > lista->tam)
-//     {
-//         printf("Índice fora dos limites.\n");
-//         return;
-//     }
+    image_gray = read_image_gray(txt);
 
-//     Elemento *atual = lista->inicio;
-//     for (int i = 1; i < op; i++)
-//     {
-//         atual = atual->prox;
-//     }
-
-//     if (atual == NULL)
-//     {
-//         printf("Erro ao encontrar o elemento na lista.\n");
-//         return;
-//     }
-
-//     printf("Imagem do txt %s gerada. \n", atual->filename);
-
-//     call_python_script("image_utils.py", "image_gray_from_txt", atual->filename, "atual_gray.png");
-
-//     print_alter();
-//     swit_gray
-// }
+    call_python_script("image_utils.py", "image_gray_from_txt", txt, "atual_gray.png");
+    lista->cont = 0;
+    swit_gray(lista, image_gray, txt);
+}
 
 ImageGray *read_image_gray(char *filename)
 {
@@ -382,9 +357,14 @@ void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
     // chamar a struct (que estara com os novos valores), e preencher o arquivo
     // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
     // adicionar ao encadeamento, no final
-
     char filename[50];
-    snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam + 1);
+    strcpy(filename, filename_gray);
+
+    if (lista->cont > 0)
+    {
+
+        snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam + 1);
+    }
 
     FILE *file = fopen(filename, "w");
     if (!file)
@@ -404,11 +384,13 @@ void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
     }
 
     fclose(file);
-    adicionar_no_lista(lista, filename);
-    strcpy(lista->fim->alt, "Original");
-    char altered_filename_gray[100];
-    snprintf(altered_filename_gray, sizeof(altered_filename_gray), "gray.txt%d", lista->tam);
-    call_python_script("image_utils.py", "image_gray_from_txt", altered_filename_gray, "atual_gray.png");
+    if (lista->cont > 0)
+    {
+        adicionar_no_lista(lista, filename);
+    }
+
+    strcpy(lista->inicio->alt, "Original");
+    call_python_script("image_utils.py", "image_gray_from_txt", filename, "atual_gray.png");
 }
 
 void free_image_gray(ImageGray *image)
@@ -430,8 +412,12 @@ void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     // adicionar ao encadeamento, no final
 
     char filename[50];
-    snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam + 1);
 
+    strcpy(filename, filename_rgb);
+    if (lista->cont > 0)
+    {
+        snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam + 1);
+    }
     FILE *file = fopen(filename, "w");
     if (!file)
     {
@@ -452,9 +438,11 @@ void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     }
 
     fclose(file);
-
-    adicionar_no_lista(lista, filename);
-    strcpy(lista->fim->alt, "Original");
+    if (lista->cont > 0)
+    {
+        adicionar_no_lista(lista, filename);
+    }
+    strcpy(lista->inicio->alt, "Original");
     char altered_filename_rgb[100];
     snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista->tam);
     call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, "atual_rgb.png");
@@ -473,27 +461,37 @@ void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     if (lista->tam > 0)
     {
-        // Aplicar o flip vertical na própria imagem
         for (int i = 0; i < image->dim.altura / 2; i++)
         {
             for (int j = 0; j < image->dim.largura; j++)
             {
-                // Trocar os pixels entre as linhas i e altura-i-1
                 int temp = image->pixels[i * image->dim.largura + j].value;
                 image->pixels[i * image->dim.largura + j].value = image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j].value;
                 image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j].value = temp;
             }
         }
-
-        // Atualizar a imagem na lista
         create_image_gray(image, lista, filename_gray);
         printf("\nFlip vertical aplicado.\n");
+
+        char filename[50];
+        strcpy(filename, filename_gray);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao Flip Vertical");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar flip vertical.\n");
     }
-    strcpy(lista->fim->alt, "Aplicacao Flip Vertical");
 }
 
 void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
@@ -504,38 +502,46 @@ void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
         {
             for (int j = 0; j < image->dim.largura / 2; j++)
             {
-                // Calcular os índices dos pixels a serem trocados
                 int idx1 = i * image->dim.largura + j;
                 int idx2 = i * image->dim.largura + (image->dim.largura - j - 1);
-
-                // Trocar os pixels entre as colunas j e largura-j-1
                 int temp = image->pixels[idx1].value;
                 image->pixels[idx1].value = image->pixels[idx2].value;
                 image->pixels[idx2].value = temp;
             }
         }
-
-        // Atualizar a imagem na lista
         create_image_gray(image, lista, filename_gray);
         printf("\nFlip horizontal aplicado.\n");
-    }
 
+        char filename[50];
+        strcpy(filename, filename_gray);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename))
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao Flip Horizontal");
+    }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
     }
-
-    strcpy(lista->fim->alt, "Aplicacao Flip Horizontal");
 }
-
-void transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray)
+void transpose_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     if (lista->tam > 0)
     {
-        // Aplicar o transpose na própria imagem
-
         PixelGray *transpose_pixels = malloc(image->dim.altura * image->dim.largura * sizeof(PixelGray));
-
+        if (!transpose_pixels)
+        {
+            fprintf(stderr, "Erro ao alocar memória para pixels transpostos.\n");
+            exit(1);
+        }
         for (int i = 0; i < image->dim.altura; i++)
         {
             for (int j = 0; j < image->dim.largura; j++)
@@ -543,49 +549,72 @@ void transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray)
                 transpose_pixels[j * image->dim.altura + i] = image->pixels[i * image->dim.largura + j];
             }
         }
+        int temp = image->dim.altura;
+        image->dim.altura = image->dim.largura;
+        image->dim.largura = temp;
 
-        image->dim.altura = image->dim.altura ^ image->dim.largura;
-        image->dim.largura = image->dim.altura ^ image->dim.largura;
-        image->dim.altura = image->dim.altura ^ image->dim.largura;
-
+        free(image->pixels);
         image->pixels = transpose_pixels;
 
-        // Atualizar a imagem na lista
         create_image_gray(image, lista, filename_gray);
         printf("\nTranspose aplicado.\n");
+
+        char filename[50];
+        strcpy(filename, filename_gray);
+
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao Transpose");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Transpose.\n");
     }
-    strcpy(lista->fim->alt, "Aplicacao Transpose");
 }
 
 void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     if (lista->tam > 0)
     {
-        // Aplicar o flip vertical na própria imagem
         for (int i = 0; i < image->dim.altura / 2; i++)
         {
             for (int j = 0; j < image->dim.largura; j++)
             {
-                // Trocar os pixels entre as linhas i e altura-i-1
                 PixelRGB temp = image->pixels[i * image->dim.largura + j];
                 image->pixels[i * image->dim.largura + j] = image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j];
                 image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j] = temp;
             }
         }
-
-        // Atualizar a imagem na lista
         create_image_rgb(image, lista, filename_rgb);
         printf("\nFlip vertical aplicado.\n");
+        char filename[50];
+        strcpy(filename, filename_rgb);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao Flip Vertical");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip vertical.\n");
     }
-    strcpy(lista->fim->alt, "Aplicacao Flip Vertical");
 }
 
 void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
@@ -596,21 +625,30 @@ void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
         {
             for (int j = 0; j < image->dim.largura / 2; j++)
             {
-                // Calcular os índices dos pixels a serem trocados
                 int idx1 = i * image->dim.largura + j;
                 int idx2 = i * image->dim.largura + (image->dim.largura - j - 1);
-
-                // Trocar os pixels entre as colunas j e largura-j-1
                 PixelRGB temp = image->pixels[idx1];
                 image->pixels[idx1] = image->pixels[idx2];
                 image->pixels[idx2] = temp;
             }
         }
-
-        // Atualizar a imagem na lista
         create_image_rgb(image, lista, filename_rgb);
         printf("\nFlip horizontal aplicado.\n");
-        strcpy(lista->fim->alt, "Aplicacao Flip Horizontal");
+
+        char filename[50];
+        strcpy(filename, filename_rgb);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao Flip Horizontal");
     }
     else
     {
@@ -618,14 +656,16 @@ void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     }
 }
 
-void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
+void transpose_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     if (lista->tam > 0)
     {
-        // Aplicar o transpose na própria imagem
-
         PixelRGB *transpose_pixels = malloc(image->dim.altura * image->dim.largura * sizeof(PixelRGB));
-
+        if (!transpose_pixels)
+        {
+            fprintf(stderr, "Erro ao alocar memória para pixels transpostos.\n");
+            exit(1);
+        }
         for (int i = 0; i < image->dim.altura; i++)
         {
             for (int j = 0; j < image->dim.largura; j++)
@@ -633,17 +673,30 @@ void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb)
                 transpose_pixels[j * image->dim.altura + i] = image->pixels[i * image->dim.largura + j];
             }
         }
+        int temp = image->dim.altura;
+        image->dim.altura = image->dim.largura;
+        image->dim.largura = temp;
 
-        image->dim.altura = image->dim.altura ^ image->dim.largura;
-        image->dim.largura = image->dim.altura ^ image->dim.largura;
-        image->dim.altura = image->dim.altura ^ image->dim.largura;
-
+        free(image->pixels);
         image->pixels = transpose_pixels;
 
-        // Atualizar a imagem na lista
         create_image_rgb(image, lista, filename_rgb);
         printf("\nTranspose aplicado.\n");
-        strcpy(lista->fim->alt, "Aplicacao Transpose");
+
+        char filename[50];
+        strcpy(filename, filename_rgb);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao Transpose");
     }
     else
     {
@@ -770,14 +823,27 @@ void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
         create_image_gray(image, lista, filename_gray);
         printf("\nCLAHE aplicado.\n");
+
+        char filename[50];
+        strcpy(filename, filename_gray);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao CLAHE");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
     }
-    strcpy(lista->fim->alt, "Aplicacao CLAHE");
 }
-
 void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     if (lista->tam > 0)
@@ -937,7 +1003,21 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
         create_image_rgb(image, lista, filename_rgb);
 
         printf("\nCLAHE aplicado.\n");
-        strcpy(lista->fim->alt, "Aplicacao CLAHE");
+
+        char filename[50];
+        strcpy(filename, filename_rgb);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao CLAHE");
     }
     else
     {
@@ -1004,8 +1084,22 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 
         // Salva a nova imagem e atualiza a lista
         create_image_rgb(image, lista, filename_rgb);
-        strcpy(lista->fim->alt, "Aplicacao Median Blur");
         printf("\nMedian Blur aplicado.\n");
+
+        char filename[50];
+        strcpy(filename, filename_rgb);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
+        }
+
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcpy(aux->alt, "Aplicacao Median Blur");
     }
     else
     {
@@ -1072,12 +1166,51 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
         // Atualiza a lista com a nova imagem
         create_image_gray(image, lista, filename_gray);
         printf("\nMedian Blur aplicado.\n");
+
+        char filename[50];
+        strcpy(filename, filename_gray);
+        if (lista->cont > 0)
+        {
+
+            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
+        }
+        Elemento *aux = lista->inicio;
+        while (strcmp(aux->filename, filename) != 0)
+        {
+            aux = aux->prox;
+        }
+        strcat(aux->alt, " ");
+        strcat(aux->alt, "- Aplicacao Median Blur");
+        
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Median Blur.\n");
     }
-    strcpy(lista->fim->alt, "Aplicacao Median Blur");
+}
+
+// Função para deletar arquivos temporários de texto
+void delete_temp_files(Lista *lista, const char *base_name)
+{
+    for (int i = 1; i <= lista->tam ; i++)
+    {
+        char temp_filename[100];
+        sprintf(temp_filename, "%s.txt%d", base_name, i);
+        if (remove(temp_filename) != 0)
+        {
+            perror("Erro ao deletar o arquivo temporário");
+        }
+    }
+}
+
+void delete_current_png(const char *base_name)
+{
+    char png_filename[100];
+    snprintf(png_filename, sizeof(png_filename), "atual_%s.png", base_name);
+    if (remove(png_filename) != 0)
+    {
+        perror("Erro ao deletar o arquivo PNG atual");
+    }
 }
 
 // void remover_ultimo_lista(Lista *lista)
@@ -1086,7 +1219,9 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
 //     {
 //         printf("Lista vazia, não há elementos para remover.\n");
 //         return;
-//     }
+//     }wzewq   
+
+
 
 //     Elemento *ultimo = lista->fim;
 //     Elemento *anterior = ultimo->ant;
@@ -1132,4 +1267,3 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
 //     // Retorna o ponteiro para o elemento encontrado
 //     return atual;
 // }
-
