@@ -41,13 +41,17 @@ typedef struct lista
     Elemento *inicio;
     Elemento *fim;
     int tam;
+    int cont;
 } Lista;
 
 void print_menu();
 void print_alter();
 void print_hist();
+void delete_temp_files(Lista *lista, const char *base_name);
+void delete_current_png(const char *base_name);
 
-void swit_hist(Lista *lista);
+
+void swit_hist_gray(Lista *lista, ImageGray *image_gray);
 void swit_gray(Lista *lista, ImageGray *image_gray, char *filename);
 void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename);
 
@@ -59,7 +63,7 @@ void liberar_lista(Lista *lista);
 void percorrer_lista(Lista *lista);
 
 void imprimir_historico(Lista *lista);
-void add_ed(Lista *lista);
+void added_gray(Lista *lista, ImageGray *image_gray);
 
 // Funções de leitura de arquivo
 ImageGray *read_image_gray(char *filename);
@@ -75,12 +79,12 @@ void free_image_rgb(ImageRGB *image);
 // Operações para ImageGray
 void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray);
 void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray);
-void transpose_Gray(ImageGray *image, Lista *lista, char *filename_gray);
+void transpose_gray(ImageGray *image, Lista *lista, char *filename_gray);
 
 // Operações para ImageRGB
 void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
-void transpose_RGB(ImageRGB *image, Lista *lista, char *filename_rgb);
+void transpose_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 
 // Manipulação por pixel para ImageGray
 void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray);
