@@ -1221,23 +1221,13 @@ void delete_current_png(const char *base_name)
     }
 }
 
-<<<<<<< Updated upstream
-// void remover_ultimo_lista(Lista *lista)
-// {
-//     if (lista->tam == 0)
-//     {
-//         printf("Lista vazia, não há elementos para remover.\n");
-//         return;
-//     }wzewq   
 
-
-=======
 void remover_ultimo_lista(Lista *lista) {
     if (lista->tam == 0) {
         printf("Lista vazia, não há elementos para remover.\n");
         return;
     }
->>>>>>> Stashed changes
+
 
     Elemento *ultimo = lista->fim;
     Elemento *anterior = ultimo->ant;
