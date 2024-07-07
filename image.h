@@ -94,4 +94,9 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_rgb);
 void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 
+void remover_ultimo_lista(Lista *lista);
+void desfazer_alteracaogray(Lista *lista);
+
+void desfazer_alteracaorgb(Lista *lista);
+
 #endif // IMAGE_H

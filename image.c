@@ -22,7 +22,8 @@ void print_alter()
     printf("4. Aplicar CLAHE\n");
     printf("5. Aplicar MEDIAN\n");
     printf("6. Historico\n");
-    printf("7. Voltar ao menu principal\n");
+    printf("7. Desfazer Alteração\n");
+    printf("8. Voltar ao menu principal\n");
 }
 
 void print_hist()
@@ -89,14 +90,17 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
             print_hist();
             swit_hist_gray(lista, image_gray);
             break;
-
         case 7:
+            desfazer_alteracaogray(lista);
+            break;
+            
+        case 8:
             break;
         default:
             printf("Opcao invalida.\n");
             break;
         }
-    } while (op != 7);
+    } while (op != 8);
 }
 
 void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
@@ -134,16 +138,20 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
             print_hist();
             // swit_hist(lista);
             break;
-
+        
         case 7:
+            median_blur_rgb(image_rgb, lista, filename);
             break;
+        case 8:
+            break;
+            desfazer_alteracaogray(lista);
 
         default:
             printf("Opcao invalida.\n");
             break;
         }
 
-    } while (op != 7);
+    } while (op != 8);
 }
 
 void call_python_script(char *py, char *funcao, char *txt, char *output)
@@ -1213,6 +1221,7 @@ void delete_current_png(const char *base_name)
     }
 }
 
+<<<<<<< Updated upstream
 // void remover_ultimo_lista(Lista *lista)
 // {
 //     if (lista->tam == 0)
@@ -1222,25 +1231,110 @@ void delete_current_png(const char *base_name)
 //     }wzewq   
 
 
+=======
+void remover_ultimo_lista(Lista *lista) {
+    if (lista->tam == 0) {
+        printf("Lista vazia, não há elementos para remover.\n");
+        return;
+    }
+>>>>>>> Stashed changes
 
-//     Elemento *ultimo = lista->fim;
-//     Elemento *anterior = ultimo->ant;
+    Elemento *ultimo = lista->fim;
+    Elemento *anterior = ultimo->ant;
 
-//     if (anterior != NULL)
-//     {
-//         anterior->prox = NULL;
-//         lista->fim = anterior;
-//     }
-//     else
-//     {
-//         // Isso significa que estamos removendo o único elemento da lista
-//         lista->inicio = NULL;
-//         lista->fim = NULL;
-//     }
+    if (anterior != NULL) {
+        anterior->prox = NULL;
+        lista->fim = anterior;
+    } else {
+        // Isso significa que estamos removendo o único elemento da lista
+        lista->inicio = NULL;
+        lista->fim = NULL;
+    }
 
-//     free(ultimo);
-//     lista->tam--;
-// }
+    free(ultimo);
+    lista->tam--;
+}
+
+
+void desfazer_alteracaogray(Lista *lista) {
+    if (lista->tam == 0) {
+        printf("Não há alterações para desfazer.\n");
+        return;
+    }
+
+    // Obter o último elemento da lista de alterações
+    Elemento *ultimo = lista->fim;
+
+    // Copiar o nome do arquivo do último elemento
+    char filename[256];
+    snprintf(filename, sizeof(filename), "%s", ultimo->filename);
+
+    // Remover o arquivo do último elemento
+    if (remove(filename) == 0) {
+        printf("Arquivo %s removido com sucesso.\n", filename);
+    } else {
+        perror("Erro ao remover o arquivo");
+    }
+
+    // Remover o último elemento da lista de alterações
+    remover_ultimo_lista(lista);
+
+    // Se ainda houver elementos na lista, obter o penúltimo elemento
+    if (lista->tam > 0) {
+        Elemento *penultimo = lista->fim;
+        char previous_filename[256];
+        snprintf(previous_filename, sizeof(previous_filename), "%s", penultimo->filename);
+
+        // Carregar o estado anterior a partir do arquivo
+        read_image_gray(previous_filename);
+        call_python_script("image_utils.py", "image_gray_from_txt", previous_filename, "atual_gray.png");
+
+        // Informar sobre a restauração da imagem
+        printf("Alteração desfeita e imagem restaurada a partir de %s\n", previous_filename);
+    } else {
+        printf("Não há mais alterações para desfazer.\n");
+    }
+}
+
+void desfazer_alteracaorgb(Lista *lista) {
+    if (lista->tam == 0) {
+        printf("Não há alterações para desfazer.\n");
+        return;
+    }
+
+    // Obter o último elemento da lista de alterações
+    Elemento *ultimo = lista->fim;
+
+    // Copiar o nome do arquivo do último elemento
+    char filename[256];
+    snprintf(filename, sizeof(filename), "%s", ultimo->filename);
+
+    // Remover o arquivo do último elemento
+    if (remove(filename) == 0) {
+        printf("Arquivo %s removido com sucesso.\n", filename);
+    } else {
+        perror("Erro ao remover o arquivo");
+    }
+
+    // Remover o último elemento da lista de alterações
+    remover_ultimo_lista(lista);
+
+    // Se ainda houver elementos na lista, obter o penúltimo elemento
+    if (lista->tam > 0) {
+        Elemento *penultimo = lista->fim;
+        char previous_filename[256];
+        snprintf(previous_filename, sizeof(previous_filename), "%s", penultimo->filename);
+
+        // Carregar o estado anterior a partir do arquivo
+        read_image_rgb(previous_filename);
+
+        // Informar sobre a restauração da imagem
+        printf("Alteração desfeita e imagem restaurada a partir de %s\n", previous_filename);
+    } else {
+        printf("Não há mais alterações para desfazer.\n");
+    }
+}
+
 
 // Elemento *encontrar_elemento(Lista *lista, char *filename)
 // {
