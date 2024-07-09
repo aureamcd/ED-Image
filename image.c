@@ -35,27 +35,6 @@ void print_hist()
     printf("7. Voltar ao menu principal\n");
 }
 
-void swit_hist_gray(Lista *lista, ImageGray *image_gray)
-{
-    int op;
-    printf("Digite a opcao:");
-    scanf("%d", &op);
-
-    switch (op)
-    {
-    case 1:
-        imprimir_historico(lista);
-        break;
-    case 2:
-
-        added_gray(lista, image_gray);
-        break;
-    default:
-        printf("Opção inválida.\n");
-        break;
-    }
-}
-
 void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
 {
     int op;
@@ -91,9 +70,9 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
             swit_hist_gray(lista, image_gray);
             break;
         case 7:
-            desfazer_alteracaogray(lista);
+            desfazer_ultima_alteracaogray(lista, image_gray);
             break;
-            
+
         case 8:
             break;
         default:
@@ -102,6 +81,51 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
         }
     } while (op != 8);
 }
+
+void desfazer_ultima_alteracao_rgb(Lista *lista, ImageRGB *imagergb)
+{
+    if (lista->ultimo_modificado == NULL)
+    {
+        printf("Nenhuma alteração para desfazer.\n");
+        return;
+    }
+
+    Elemento *elem = lista->ultimo_modificado;
+    if (elem->pilha && elem->pilha->prox)
+    {
+        // Remover o último elemento da pilha
+        Pilha *remover = elem->pilha;
+        elem->pilha = remover->prox;
+        elem->tam_listap--;
+        free(remover);
+
+        // Se a pilha ficar vazia, atualiza o último modificado
+        if (elem->pilha == NULL)
+        {
+            lista->ultimo_modificado = NULL;
+        }
+
+        // Atualizar imagergb com o novo topo da pilha, se houver
+        if (elem->pilha)
+        {
+            // Aqui você precisaria implementar a cópia dos pixels de elem->pilha->imagergb para imagergb
+            // Suponha que ImageRGB tenha uma função para copiar os pixels
+           imagergb = elem->pilha->imagergb;
+
+            // Chamar a função create com o filename do topo da pilha
+            create_image_rgb(imagergb, lista, elem->filename); // Supondo que create é a função que você deseja chamar
+        }
+        else
+        {
+            printf("Pilha vazia após desfazer a última alteração.\n");
+        }
+    }
+    else
+    {
+        printf("Não há alterações suficientes para desfazer.\n");
+    }
+}
+
 
 void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
 {
@@ -136,15 +160,14 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
 
         case 6:
             print_hist();
-            // swit_hist(lista);
+            swit_hist_rgb(lista, image_rgb);
             break;
-        
+
         case 7:
-            median_blur_rgb(image_rgb, lista, filename);
+            desfazer_ultima_alteracao_rgb(lista, image_rgb);
             break;
         case 8:
             break;
-            desfazer_alteracaogray(lista);
 
         default:
             printf("Opcao invalida.\n");
@@ -152,6 +175,71 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
         }
 
     } while (op != 8);
+}
+
+void swit_hist_gray(Lista *lista, ImageGray *image_gray)
+{
+    int op;
+    printf("Digite a opcao:");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        imprimir_historico(lista);
+        break;
+    case 2:
+
+        added_gray(lista, image_gray);
+        break;
+    default:
+        printf("Opção inválida.\n");
+        break;
+    }
+}
+
+void swit_hist_rgb(Lista *lista, ImageRGB *image_rgb)
+{
+    int op;
+    printf("Digite a opcao:");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        imprimir_historico(lista);
+        break;
+    case 2:
+
+        added_rgb(lista, image_rgb);
+        break;
+    default:
+        printf("Opção inválida.\n");
+        break;
+    }
+}
+
+void delete_temp_files(Lista *lista, const char *base_name)
+{
+    for (int i = 1; i <= lista->tam; i++)
+    {
+        char temp_filename[100];
+        sprintf(temp_filename, "%s.txt%d", base_name, i);
+        if (remove(temp_filename) != 0)
+        {
+            perror("Erro ao deletar o arquivo temporário");
+        }
+    }
+}
+
+void delete_current_png(const char *base_name)
+{
+    char png_filename[100];
+    snprintf(png_filename, sizeof(png_filename), "atual_%s.png", base_name);
+    if (remove(png_filename) != 0)
+    {
+        perror("Erro ao deletar o arquivo PNG atual");
+    }
 }
 
 void call_python_script(char *py, char *funcao, char *txt, char *output)
@@ -164,22 +252,56 @@ void call_python_script(char *py, char *funcao, char *txt, char *output)
 Lista *criaLista()
 {
     Lista *lista = (Lista *)malloc(sizeof(Lista));
+    if (!lista)
+    {
+        fprintf(stderr, "Erro ao alocar memória para a lista.\n");
+        exit(1);
+    }
+
     lista->inicio = NULL;
     lista->fim = NULL;
+    lista->ultimo_modificado = NULL;
     lista->tam = 0;
+    lista->cont = 0;
+
     return lista;
 }
+
+
+void liberar_lista(Lista *lista)
+{
+    Elemento *atual = lista->inicio;
+    while (atual)
+    {
+        Elemento *prox = atual->prox;
+
+        Pilha *pilha_atual = atual->pilha;
+        while (pilha_atual)
+        {
+            Pilha *prox_pilha = pilha_atual->prox;
+            free(pilha_atual);
+            pilha_atual = prox_pilha;
+        }
+        free(atual);
+        atual = prox;
+    }
+    free(lista);
+}
+
 
 void adicionar_no_lista(Lista *lista, char *filename)
 {
     Elemento *novo = (Elemento *)malloc(sizeof(Elemento));
     if (!novo)
     {
-        printf("Erro ao alocar memoria para o elemento\n");
+        fprintf(stderr, "Erro ao alocar memória para o elemento.\n");
         exit(1);
     }
+
     strncpy(novo->filename, filename, sizeof(novo->filename) - 1);
     novo->filename[sizeof(novo->filename) - 1] = '\0';
+    novo->pilha = NULL;
+    novo->tam_listap = 0;
     novo->prox = NULL;
     novo->ant = lista->fim;
 
@@ -195,44 +317,152 @@ void adicionar_no_lista(Lista *lista, char *filename)
     lista->tam++;
 }
 
-void liberar_lista(Lista *lista)
+
+void push_pilha_gray(Lista *lista, ImageGray *image_gray, char *filename, char *alteracao)
 {
-    Elemento *atual = lista->inicio;
-    while (atual)
+    Elemento *elem = lista->inicio;
+    while (elem)
     {
-        Elemento *proximo = atual->prox;
-        free(atual);
-        atual = proximo;
+        if (strcmp(elem->filename, filename) == 0)
+        {
+            Pilha *nova_pilha = (Pilha *)malloc(sizeof(Pilha));
+            if (!nova_pilha)
+            {
+                fprintf(stderr, "Erro ao alocar memória para nova pilha.\n");
+                exit(1);
+            }
+
+            nova_pilha->imagegray = image_gray;
+            nova_pilha->imagergb = NULL; // Assumindo que a pilha para RGB não será usada aqui
+            strcpy(nova_pilha->alt, alteracao);
+            nova_pilha->prox = elem->pilha;
+            elem->pilha = nova_pilha;
+            elem->tam_listap++;
+            lista->ultimo_modificado = elem;
+            return;
+        }
+        elem = elem->prox;
     }
-    free(lista);
+
+    // Se não encontrou um elemento com o mesmo filename, cria um novo elemento na lista
+    adicionar_no_lista(lista, filename);
+    push_pilha_gray(lista, image_gray, filename, alteracao); // Chama novamente para adicionar a pilha
 }
 
-void percorrer_lista(Lista *lista)
+
+void push_pilha_rgb(Lista *lista, ImageRGB *image_rgb, char *filename, char *alteracao)
 {
-    Elemento *atual = lista->inicio;
-    while (atual != NULL)
+    Elemento *elem = lista->inicio;
+    while (elem)
     {
-        printf("%s\n", atual->filename);
-        atual = atual->prox;
+        if (strcmp(elem->filename, filename) == 0)
+        {
+            Pilha *nova_pilha = (Pilha *)malloc(sizeof(Pilha));
+            if (!nova_pilha)
+            {
+                fprintf(stderr, "Erro ao alocar memória para nova pilha.\n");
+                exit(1);
+            }
+
+            nova_pilha->imagegray = NULL;
+            nova_pilha->imagergb = image_rgb; // Assumindo que a pilha para grayscale não será usada aqui
+            strcpy(nova_pilha->alt, alteracao);
+            nova_pilha->prox = elem->pilha;
+            elem->pilha = nova_pilha;
+            elem->tam_listap++;
+            lista->ultimo_modificado = elem;
+            return;
+        }
+        elem = elem->prox;
     }
+
+    // Se não encontrou um elemento com o mesmo filename, cria um novo elemento na lista
+    adicionar_no_lista(lista, filename);
+    push_pilha_rgb(lista, image_rgb, filename, alteracao); // Chama novamente para adicionar a pilha
 }
+
 
 void imprimir_historico(Lista *lista)
 {
-    if (lista->tam == 0)
+    Elemento *elem = lista->inicio;
+
+    while (elem)
     {
-        printf("Lista vazia.\n");
+        printf("Arquivo: %s\n", elem->filename);
+
+        Pilha *pilha = elem->pilha;
+        if (pilha)
+        {
+            printf("- Alteracao: ");
+            while (pilha)
+            {
+                printf("%s", pilha->alt);
+                pilha = pilha->prox;
+                if (pilha)
+                {
+                    printf(" - ");
+                }
+            }
+        }
+
+        elem = elem->prox;
+        if (elem)
+        {
+            printf("\n\n"); // Espaço entre arquivos
+        }
+        else
+        {
+            printf("\n"); // Fim do último arquivo
+        }
+    }
+}
+
+
+void desfazer_ultima_alteracaogray(Lista *lista, ImageGray *imagegray)
+{
+    if (lista->ultimo_modificado == NULL)
+    {
+        printf("Nenhuma alteração para desfazer.\n");
         return;
     }
 
-    printf("\nHistorico de alteracoes:\n");
-    Elemento *atual = lista->inicio;
-    while (atual != NULL)
+    Elemento *elem = lista->ultimo_modificado;
+    if (elem->pilha && elem->pilha->prox)
     {
-        printf("%s%s\n", atual->filename, atual->alt);
-        atual = atual->prox;
+        // Remover o último elemento da pilha
+        Pilha *remover = elem->pilha;
+        elem->pilha = remover->prox;
+        elem->tam_listap--;
+        free(remover);
+
+        // Se a pilha ficar vazia, atualiza o último modificado
+        if (elem->pilha == NULL)
+        {
+            lista->ultimo_modificado = NULL;
+        }
+
+        // Atualizar imagegray com o novo topo da pilha, se houver
+        if (elem->pilha)
+        {
+            // Aqui você precisaria implementar a cópia dos pixels de elem->pilha->imagegray para imagegray
+            // Suponha que ImageGray tenha uma função para copiar os pixels
+            imagegray = elem->pilha->imagegray;
+
+            // Chamar a função create com o filename do topo da pilha
+            create_image_gray(imagegray, lista, elem->filename); // Supondo que create é a função que você deseja chamar
+        }
+        else
+        {
+            printf("Pilha vazia após desfazer a última alteração.\n");
+        }
+    }
+    else
+    {
+        printf("Não há alterações suficientes para desfazer.\n");
     }
 }
+
+
 
 void added_gray(Lista *lista, ImageGray *image_gray)
 {
@@ -240,13 +470,28 @@ void added_gray(Lista *lista, ImageGray *image_gray)
     imprimir_historico(lista);
 
     printf("Digite o nome do TXT:");
-    scanf(" %s", txt);
+    scanf("%s", txt);
 
     image_gray = read_image_gray(txt);
 
     call_python_script("image_utils.py", "image_gray_from_txt", txt, "atual_gray.png");
     lista->cont = 0;
     swit_gray(lista, image_gray, txt);
+}
+
+void added_rgb(Lista *lista, ImageRGB *image_rgb)
+{
+    char txt[50];
+    imprimir_historico(lista);
+
+    printf("Digite o nome do TXT:");
+    scanf(" %s", txt);
+
+    image_rgb = read_image_rgb(txt);
+
+    call_python_script("image_utils.py", "image_rgb_from_txt", txt, "atual_rgb.png");
+    lista->cont = 0;
+    swit_rgb(lista, image_rgb, txt);
 }
 
 ImageGray *read_image_gray(char *filename)
@@ -388,6 +633,7 @@ void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
         {
             fprintf(file, "%d,", image->pixels[i * image->dim.largura + j].value);
         }
+
         fprintf(file, "\n");
     }
 
@@ -397,7 +643,6 @@ void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
         adicionar_no_lista(lista, filename);
     }
 
-    strcpy(lista->inicio->alt, "Original");
     call_python_script("image_utils.py", "image_gray_from_txt", filename, "atual_gray.png");
 }
 
@@ -450,10 +695,8 @@ void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     {
         adicionar_no_lista(lista, filename);
     }
-    strcpy(lista->inicio->alt, "Original");
-    char altered_filename_rgb[100];
-    snprintf(altered_filename_rgb, sizeof(altered_filename_rgb), "rgb.txt%d", lista->tam);
-    call_python_script("image_utils.py", "image_rgb_from_txt", altered_filename_rgb, "atual_rgb.png");
+
+    call_python_script("image_utils.py", "image_rgb_from_txt", filename, "atual_rgb.png");
 }
 
 void free_image_rgb(ImageRGB *image)
@@ -489,12 +732,8 @@ void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
 
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao Flip Vertical");
+       
+        push_pilha_gray(lista, image, filename, "Aplicacao Flip Vertical");
     }
     else
     {
@@ -528,12 +767,8 @@ void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
 
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename))
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao Flip Horizontal");
+       
+        push_pilha_gray(lista, image, filename, "Aplicacao Flip Horizontal");
     }
     else
     {
@@ -576,12 +811,8 @@ void transpose_gray(ImageGray *image, Lista *lista, char *filename_gray)
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
 
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao Transpose");
+       
+        push_pilha_gray(lista, image, filename, "Aplicacao Transpose");
     }
     else
     {
@@ -612,12 +843,8 @@ void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
 
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao Flip Vertical");
+      
+        push_pilha_rgb(lista, image, filename, "Aplicacao Flip Vertical");
     }
     else
     {
@@ -651,12 +878,8 @@ void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
 
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao Flip Horizontal");
+    
+        push_pilha_rgb(lista, image, filename, "Aplicacao Flip Horizontal");
     }
     else
     {
@@ -698,13 +921,8 @@ void transpose_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
-
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao Transpose");
+     
+        push_pilha_rgb(lista, image, filename, "Aplicacao Transpose");
     }
     else
     {
@@ -839,19 +1057,15 @@ void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
-
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao CLAHE");
+    
+        push_pilha_gray(lista, image, filename, "Aplicacao CLAHE");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
     }
 }
+
 void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     if (lista->tam > 0)
@@ -1018,14 +1232,8 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
         {
 
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
-        }
-
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao CLAHE");
+        }         
+        push_pilha_rgb(lista, image, filename, "Aplicacao CLAHE");
     }
     else
     {
@@ -1102,12 +1310,7 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
 
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcpy(aux->alt, "Aplicacao Median Blur");
+                push_pilha_rgb(lista, image, filename, "Aplicacao MEDIAN");
     }
     else
     {
@@ -1182,14 +1385,8 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
-        Elemento *aux = lista->inicio;
-        while (strcmp(aux->filename, filename) != 0)
-        {
-            aux = aux->prox;
-        }
-        strcat(aux->alt, " ");
-        strcat(aux->alt, "- Aplicacao Median Blur");
-        
+       
+        push_pilha_gray(lista, image, filename, "Aplicacao MEDIAN");
     }
     else
     {
@@ -1198,44 +1395,25 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
 }
 
 // Função para deletar arquivos temporários de texto
-void delete_temp_files(Lista *lista, const char *base_name)
+
+void remover_ultimo_lista(Lista *lista)
 {
-    for (int i = 1; i <= lista->tam ; i++)
+    if (lista->tam == 0)
     {
-        char temp_filename[100];
-        sprintf(temp_filename, "%s.txt%d", base_name, i);
-        if (remove(temp_filename) != 0)
-        {
-            perror("Erro ao deletar o arquivo temporário");
-        }
-    }
-}
-
-void delete_current_png(const char *base_name)
-{
-    char png_filename[100];
-    snprintf(png_filename, sizeof(png_filename), "atual_%s.png", base_name);
-    if (remove(png_filename) != 0)
-    {
-        perror("Erro ao deletar o arquivo PNG atual");
-    }
-}
-
-
-void remover_ultimo_lista(Lista *lista) {
-    if (lista->tam == 0) {
         printf("Lista vazia, não há elementos para remover.\n");
         return;
     }
 
-
     Elemento *ultimo = lista->fim;
     Elemento *anterior = ultimo->ant;
 
-    if (anterior != NULL) {
+    if (anterior != NULL)
+    {
         anterior->prox = NULL;
         lista->fim = anterior;
-    } else {
+    }
+    else
+    {
         // Isso significa que estamos removendo o único elemento da lista
         lista->inicio = NULL;
         lista->fim = NULL;
@@ -1245,86 +1423,82 @@ void remover_ultimo_lista(Lista *lista) {
     lista->tam--;
 }
 
+// void desfazer_alteracaogray(Lista *lista)
+// {
+//     char op;
+//     Pilha *p = (Pilha *)malloc(sizeof(Pilha));
+//     Elemento *atual = (Elemento *)malloc(sizeof(Elemento));
 
-void desfazer_alteracaogray(Lista *lista) {
-    if (lista->tam == 0) {
-        printf("Não há alterações para desfazer.\n");
-        return;
-    }
+//     if (lista->tam > 1)
+//     {
+//         Pilha *aux = p;
+//         p = p->prox;
 
-    // Obter o último elemento da lista de alterações
-    Elemento *ultimo = lista->fim;
+//         // comparar os primeiros 100 pixels pra enconstrar o da pilha
 
-    // Copiar o nome do arquivo do último elemento
-    char filename[256];
-    snprintf(filename, sizeof(filename), "%s", ultimo->filename);
+//         printf("\nApagar %s (s/n)?", aux.->filename);
+//         scanf("%c", &op);
+//         getchar();
+//         printf("Elemento %d do topo removido\n", aux->info);
+//         free(aux);
+//     }
 
-    // Remover o arquivo do último elemento
-    if (remove(filename) == 0) {
-        printf("Arquivo %s removido com sucesso.\n", filename);
-    } else {
-        perror("Erro ao remover o arquivo");
-    }
+//     // Obter o último elemento da lista de alterações
+//     Elemento *ultimo = lista->fim;
 
-    // Remover o último elemento da lista de alterações
-    remover_ultimo_lista(lista);
+//     printf("\nApagar %s (s/n)?", ultimo->filename);
+//     scanf("%c", &op);
+//     if (op == 's')
+//     {
+//         if (remove(ultimo->filename) == 0)
+//         {
+//             printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
+//         }
+//         else
+//         {
+//             perror("Erro ao remover o arquivo");
+//         }
+//         remover_ultimo_lista(lista);
+//         read_image_rgb(ultimo->filename);
+//         call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
+//         printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+//     }
+// }
+// }
 
-    // Se ainda houver elementos na lista, obter o penúltimo elemento
-    if (lista->tam > 0) {
-        Elemento *penultimo = lista->fim;
-        char previous_filename[256];
-        snprintf(previous_filename, sizeof(previous_filename), "%s", penultimo->filename);
+// void desfazer_alteracaorgb(Lista *lista)
+// {
+//     char op;
+//     if (lista->tam == 1)
+//     {
+//         printf("Não há alterações para desfazer.\n");
+//         return;
+//     }
+//     else
+//     {
 
-        // Carregar o estado anterior a partir do arquivo
-        read_image_gray(previous_filename);
-        call_python_script("image_utils.py", "image_gray_from_txt", previous_filename, "atual_gray.png");
+//         // Obter o último elemento da lista de alterações
+//         Elemento *ultimo = lista->fim;
 
-        // Informar sobre a restauração da imagem
-        printf("Alteração desfeita e imagem restaurada a partir de %s\n", previous_filename);
-    } else {
-        printf("Não há mais alterações para desfazer.\n");
-    }
-}
-
-void desfazer_alteracaorgb(Lista *lista) {
-    if (lista->tam == 0) {
-        printf("Não há alterações para desfazer.\n");
-        return;
-    }
-
-    // Obter o último elemento da lista de alterações
-    Elemento *ultimo = lista->fim;
-
-    // Copiar o nome do arquivo do último elemento
-    char filename[256];
-    snprintf(filename, sizeof(filename), "%s", ultimo->filename);
-
-    // Remover o arquivo do último elemento
-    if (remove(filename) == 0) {
-        printf("Arquivo %s removido com sucesso.\n", filename);
-    } else {
-        perror("Erro ao remover o arquivo");
-    }
-
-    // Remover o último elemento da lista de alterações
-    remover_ultimo_lista(lista);
-
-    // Se ainda houver elementos na lista, obter o penúltimo elemento
-    if (lista->tam > 0) {
-        Elemento *penultimo = lista->fim;
-        char previous_filename[256];
-        snprintf(previous_filename, sizeof(previous_filename), "%s", penultimo->filename);
-
-        // Carregar o estado anterior a partir do arquivo
-        read_image_rgb(previous_filename);
-
-        // Informar sobre a restauração da imagem
-        printf("Alteração desfeita e imagem restaurada a partir de %s\n", previous_filename);
-    } else {
-        printf("Não há mais alterações para desfazer.\n");
-    }
-}
-
+//         printf("\nApagar %s (s/n)?", ultimo->filename);
+//         scanf("%c", &op);
+//         if (op == 's')
+//         {
+//             if (remove(ultimo->filename) == 0)
+//             {
+//                 printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
+//             }
+//             else
+//             {
+//                 perror("Erro ao remover o arquivo");
+//             }
+//             remover_ultimo_lista(lista);
+//             read_image_rgb(ultimo->filename);
+//             call_python_script("image_utils.py", "image_rgb_from_txt", ultimo->filename, "atual_rgb.png");
+//             printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+//         }
+//     }
+// }
 
 // Elemento *encontrar_elemento(Lista *lista, char *filename)
 // {
