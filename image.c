@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h> 
 #include "image.h"
 
 void print_menu()
@@ -21,9 +22,10 @@ void print_alter()
     printf("3. Aplicar transpose\n");
     printf("4. Aplicar CLAHE\n");
     printf("5. Aplicar MEDIAN\n");
-    printf("6. Historico\n");
-    printf("7. Desfazer Alteração\n");
-    printf("8. Voltar ao menu principal\n");
+    printf("6. Adicionar Aleatorio\n");
+    printf("7. Historico\n");
+    printf("8. Desfazer Alteração\n");
+    printf("9. Voltar ao menu principal\n");
 }
 
 void print_hist()
@@ -66,20 +68,24 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
             break;
 
         case 6:
+            adicionar_aleatorio_gray(image_gray, lista, filename);
+            break;
+
+        case 7:
             print_hist();
             swit_hist_gray(lista, image_gray);
             break;
-        case 7:
+        case 8:
             desfazer_ultima_alteracaogray(lista, image_gray);
             break;
 
-        case 8:
+        case 9:
             break;
         default:
             printf("Opcao invalida.\n");
             break;
         }
-    } while (op != 8);
+    } while (op != 9);
 }
 
 void desfazer_ultima_alteracao_rgb(Lista *lista, ImageRGB *imagergb)
@@ -156,16 +162,20 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
         case 5:
             median_blur_rgb(image_rgb, lista, filename);
             break;
-
+        
         case 6:
+            adicionar_aleatorio_rgb(image_rgb, lista, filename);
+            break;
+
+        case 7:
             print_hist();
             swit_hist_rgb(lista, image_rgb);
             break;
 
-        case 7:
+        case 8:
             desfazer_ultima_alteracao_rgb(lista, image_rgb);
             break;
-        case 8:
+        case 9:
             break;
 
         default:
@@ -173,7 +183,7 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
             break;
         }
 
-    } while (op != 8);
+    } while (op != 9);
 }
 
 void swit_hist_gray(Lista *lista, ImageGray *image_gray)
@@ -1443,6 +1453,96 @@ void remover_ultimo_lista(Lista *lista)
     free(ultimo);
     lista->tam--;
 }
+
+void adicionar_aleatorio_gray(ImageGray *image, Lista *lista, char *filename_gray) {
+    
+    srand(time(NULL));
+    
+    
+    int random_case = rand() % 7 + 1;
+
+    
+    switch(random_case) {
+        case 1:
+            flip_horizontal_gray(image, lista, filename_gray);
+            break;
+
+        case 2:
+            flip_vertical_gray(image, lista, filename_gray);
+            break;
+
+        case 3:
+            transpose_gray(image, lista, filename_gray);
+            break;
+
+        case 4:
+            clahe_gray(image, lista, filename_gray);
+            break;
+
+        case 5:
+            median_blur_gray(image, lista, filename_gray);
+            break;
+
+        case 6:
+            print_hist();
+            swit_hist_gray(lista, image);
+            break;
+
+        case 7:
+            desfazer_ultima_alteracaogray(lista, image);
+            break;
+
+        default:
+            printf("Opcao invalida.\n");
+            break;
+    }
+}
+
+void adicionar_aleatorio_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
+  
+    srand(time(NULL));
+    
+   
+    int random_case = rand() % 7 + 1;
+
+    
+    switch(random_case) {
+        case 1:
+            flip_horizontal_rgb(image, lista, filename_rgb);
+            break;
+
+        case 2:
+            flip_vertical_rgb(image, lista, filename_rgb);
+            break;
+
+        case 3:
+            transpose_rgb(image, lista, filename_rgb);
+            break;
+
+        case 4:
+            clahe_rgb(image, lista, filename_rgb);
+            break;
+
+        case 5:
+            median_blur_rgb(image, lista, filename_rgb);
+            break;
+
+        case 6:
+            print_hist();
+            swit_hist_rgb(lista, image);
+            break;
+
+        case 7:
+            desfazer_ultima_alteracao_rgb(lista, image);
+            break;
+
+        default:
+            printf("Opcao invalida.\n");
+            break;
+    }
+}
+
+
 
 // void desfazer_alteracaogray(Lista *lista)
 // {
