@@ -13,10 +13,10 @@ int main()
     ImageRGB *image_rgb = NULL;
     Lista *lista_gray = criaLista();
     Lista *lista_rgb = criaLista();
+    
+
     char nomen[100];
     char nomea[100];
-    lista_gray->cont = 0;
-    lista_rgb->cont = 0;
 
     do
     {
@@ -44,6 +44,9 @@ int main()
                     printf("Valor do primeiro pixel em escala de cinza: %d\n", image_gray->pixels[0].value);
 
                     create_image_gray(image_gray, lista_gray, filename_gray);
+                    char file[50];
+                    sprintf(file, "%s%d", filename_gray, lista_gray->tam);
+                    push_pilha_gray(lista_gray, image_gray, file, "Original");
 
                     swit_gray(lista_gray, image_gray, filename_gray);
 
@@ -68,6 +71,7 @@ int main()
                     scanf(" %c", &opc);
                     getchar(); // Captura o caractere newline residual
                 }
+                
 
                 liberar_lista(lista_gray);
                 break;
@@ -116,35 +120,35 @@ int main()
                 printf("Opção 3 selecionada - implementar leitura e processamento de imagem.\n");
                 break;
 
-            case 4:       
-            if (filename_gray[0] != '\0')
-    {
-        char base_name[100];
-        strcpy(base_name, filename_gray);
-        char *dot = strrchr(base_name, '.');
-        if (dot != NULL && strcmp(dot, ".txt") == 0)
-        {
-            *dot = '\0';
-        }
-        delete_temp_files(lista_gray, base_name);
-        delete_current_png(base_name); // Deletar PNG atual
-    }
-    if (filename_rgb[0] != '\0')
-    {
-        char base_name[100];
-        strcpy(base_name, filename_rgb);
-        char *dot = strrchr(base_name, '.');
-        if (dot != NULL && strcmp(dot, ".txt") == 0)
-        {
-            *dot = '\0';
-        }
-        delete_temp_files(lista_rgb, base_name);
-        delete_current_png(base_name); // Deletar PNG atual
-    }
+            case 4:
+                if (filename_gray[0] != '\0')
+                {
+                    char base_name[100];
+                    strcpy(base_name, filename_gray);
+                    char *dot = strrchr(base_name, '.');
+                    if (dot != NULL && strcmp(dot, ".txt") == 0)
+                    {
+                        *dot = '\0';
+                    }
+                    delete_temp_files(lista_gray, base_name);
+                    delete_current_png(base_name); // Deletar PNG atual
+                }
+                if (filename_rgb[0] != '\0')
+                {
+                    char base_name[100];
+                    strcpy(base_name, filename_rgb);
+                    char *dot = strrchr(base_name, '.');
+                    if (dot != NULL && strcmp(dot, ".txt") == 0)
+                    {
+                        *dot = '\0';
+                    }
+                    delete_temp_files(lista_rgb, base_name);
+                    delete_current_png(base_name); // Deletar PNG atual
+                }
 
-    liberar_lista(lista_gray);
-    liberar_lista(lista_rgb);      
-                
+                liberar_lista(lista_gray);
+                liberar_lista(lista_rgb);
+
                 printf("Programa encerrado.\n");
                 return 0;
 
