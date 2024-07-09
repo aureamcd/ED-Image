@@ -110,7 +110,7 @@ void desfazer_ultima_alteracao_rgb(Lista *lista, ImageRGB *imagergb)
         {
             // Aqui você precisaria implementar a cópia dos pixels de elem->pilha->imagergb para imagergb
             // Suponha que ImageRGB tenha uma função para copiar os pixels
-           imagergb = elem->pilha->imagergb;
+            imagergb = elem->pilha->imagergb;
 
             // Chamar a função create com o filename do topo da pilha
             create_image_rgb(imagergb, lista, elem->filename); // Supondo que create é a função que você deseja chamar
@@ -125,7 +125,6 @@ void desfazer_ultima_alteracao_rgb(Lista *lista, ImageRGB *imagergb)
         printf("Não há alterações suficientes para desfazer.\n");
     }
 }
-
 
 void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
 {
@@ -267,7 +266,6 @@ Lista *criaLista()
     return lista;
 }
 
-
 void liberar_lista(Lista *lista)
 {
     Elemento *atual = lista->inicio;
@@ -287,7 +285,6 @@ void liberar_lista(Lista *lista)
     }
     free(lista);
 }
-
 
 void adicionar_no_lista(Lista *lista, char *filename)
 {
@@ -316,7 +313,6 @@ void adicionar_no_lista(Lista *lista, char *filename)
     lista->fim = novo;
     lista->tam++;
 }
-
 
 void push_pilha_gray(Lista *lista, ImageGray *image_gray, char *filename, char *alteracao)
 {
@@ -349,7 +345,6 @@ void push_pilha_gray(Lista *lista, ImageGray *image_gray, char *filename, char *
     push_pilha_gray(lista, image_gray, filename, alteracao); // Chama novamente para adicionar a pilha
 }
 
-
 void push_pilha_rgb(Lista *lista, ImageRGB *image_rgb, char *filename, char *alteracao)
 {
     Elemento *elem = lista->inicio;
@@ -380,7 +375,6 @@ void push_pilha_rgb(Lista *lista, ImageRGB *image_rgb, char *filename, char *alt
     adicionar_no_lista(lista, filename);
     push_pilha_rgb(lista, image_rgb, filename, alteracao); // Chama novamente para adicionar a pilha
 }
-
 
 void imprimir_historico(Lista *lista)
 {
@@ -417,7 +411,6 @@ void imprimir_historico(Lista *lista)
     }
 }
 
-
 void desfazer_ultima_alteracaogray(Lista *lista, ImageGray *imagegray)
 {
     if (lista->ultimo_modificado == NULL)
@@ -426,8 +419,24 @@ void desfazer_ultima_alteracaogray(Lista *lista, ImageGray *imagegray)
         return;
     }
 
-    Elemento *elem = lista->ultimo_modificado;
-    if (elem->pilha && elem->pilha->prox)
+    // Copiar o filename do último modificado
+    char filename[50];
+    strcpy(filename, lista->ultimo_modificado->filename);
+
+    // Procurar o elemento correspondente ao filename
+    Elemento *elem = lista->inicio;
+     while (elem != NULL && strcmp(elem->filename, filename) != 0)
+    {
+        elem = elem->prox;
+    }
+
+    if (elem == NULL)
+    {
+        printf("Elemento não encontrado.\n");
+        return;
+    }
+    
+    if (elem->pilha)
     {
         // Remover o último elemento da pilha
         Pilha *remover = elem->pilha;
@@ -435,25 +444,44 @@ void desfazer_ultima_alteracaogray(Lista *lista, ImageGray *imagegray)
         elem->tam_listap--;
         free(remover);
 
-        // Se a pilha ficar vazia, atualiza o último modificado
+        // Verificar se a pilha está vazia após a remoção
         if (elem->pilha == NULL)
         {
+            // Remover o elemento da lista, pois não há mais alterações
+            if (elem->ant)
+            {
+                elem->ant->prox = elem->prox;
+            }
+            else
+            {
+                lista->inicio = elem->prox;
+            }
+            if (elem->prox)
+            {
+                elem->prox->ant = elem->ant;
+            }
+            else
+            {
+                lista->fim = elem->ant;
+            }
+
+            // Excluir o arquivo TXT associado ao elemento removido
+            remove(elem->filename);
+
+            free(elem);
             lista->ultimo_modificado = NULL;
-        }
-
-        // Atualizar imagegray com o novo topo da pilha, se houver
-        if (elem->pilha)
-        {
-            // Aqui você precisaria implementar a cópia dos pixels de elem->pilha->imagegray para imagegray
-            // Suponha que ImageGray tenha uma função para copiar os pixels
-            imagegray = elem->pilha->imagegray;
-
-            // Chamar a função create com o filename do topo da pilha
-            create_image_gray(imagegray, lista, elem->filename); // Supondo que create é a função que você deseja chamar
+            printf("Arquivo e pilha removidos, pois não há mais alterações.\n");
         }
         else
         {
-            printf("Pilha vazia após desfazer a última alteração.\n");
+            // Atualizar o último modificado para o novo topo da pilha
+            lista->ultimo_modificado = elem;
+            printf("%s", lista->fim->pilha->alt);
+            // Atualizar imagegray com o novo topo da pilha
+            *imagegray = *(lista->fim->pilha->imagegray);
+
+            // Chamar a função create_image_gray com o filename do elemento original
+            create_image_gray(imagegray, lista, lista->fim->filename); // Supondo que create_image_gray é a função que você deseja chamar
         }
     }
     else
@@ -461,8 +489,6 @@ void desfazer_ultima_alteracaogray(Lista *lista, ImageGray *imagegray)
         printf("Não há alterações suficientes para desfazer.\n");
     }
 }
-
-
 
 void added_gray(Lista *lista, ImageGray *image_gray)
 {
@@ -732,7 +758,6 @@ void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
 
-       
         push_pilha_gray(lista, image, filename, "Aplicacao Flip Vertical");
     }
     else
@@ -767,7 +792,6 @@ void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
 
-       
         push_pilha_gray(lista, image, filename, "Aplicacao Flip Horizontal");
     }
     else
@@ -811,7 +835,6 @@ void transpose_gray(ImageGray *image, Lista *lista, char *filename_gray)
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
 
-       
         push_pilha_gray(lista, image, filename, "Aplicacao Transpose");
     }
     else
@@ -843,7 +866,6 @@ void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
 
-      
         push_pilha_rgb(lista, image, filename, "Aplicacao Flip Vertical");
     }
     else
@@ -878,7 +900,6 @@ void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
 
-    
         push_pilha_rgb(lista, image, filename, "Aplicacao Flip Horizontal");
     }
     else
@@ -921,7 +942,7 @@ void transpose_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
-     
+
         push_pilha_rgb(lista, image, filename, "Aplicacao Transpose");
     }
     else
@@ -1057,7 +1078,7 @@ void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
-    
+
         push_pilha_gray(lista, image, filename, "Aplicacao CLAHE");
     }
     else
@@ -1232,7 +1253,7 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
         {
 
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
-        }         
+        }
         push_pilha_rgb(lista, image, filename, "Aplicacao CLAHE");
     }
     else
@@ -1310,7 +1331,7 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
             snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
         }
 
-                push_pilha_rgb(lista, image, filename, "Aplicacao MEDIAN");
+        push_pilha_rgb(lista, image, filename, "Aplicacao MEDIAN");
     }
     else
     {
@@ -1385,7 +1406,7 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
             snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
         }
-       
+
         push_pilha_gray(lista, image, filename, "Aplicacao MEDIAN");
     }
     else
