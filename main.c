@@ -46,7 +46,6 @@ int main()
                     create_image_gray(image_gray, lista_gray, filename_gray);
                     char file[50];
                     sprintf(file, "%s%d", filename_gray, lista_gray->tam);
-                    push_pilha_gray(lista_gray, image_gray, file, "Original");
 
                     swit_gray(lista_gray, image_gray, filename_gray);
 
@@ -58,6 +57,7 @@ int main()
                     {
                         *dot = '\0';
                     }
+
 
                     sprintf(nomea, "%s_%d.txt", base_name, lista_gray->tam);
                     sprintf(nomen, "%s_final.txt", base_name);
