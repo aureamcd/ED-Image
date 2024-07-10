@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h> 
+#include <time.h>
 #include "image.h"
 
 void print_menu()
@@ -13,78 +13,122 @@ void print_menu()
     printf("4. Sair\n");
 }
 
-void print_alter()
+void print_menug()
 {
 
     printf("\nEscolha uma opcao:\n");
-    printf("1. Aplicar flip horizontal\n");
-    printf("2. Aplicar flip vertical\n");
-    printf("3. Aplicar transpose\n");
-    printf("4. Aplicar CLAHE\n");
-    printf("5. Aplicar MEDIAN\n");
-    printf("6. Adicionar Aleatorio\n");
-    printf("7. Historico\n");
-    printf("8. Desfazer Alteração\n");
-    printf("9. Voltar ao menu principal\n");
+    printf("1. Adicionar Edicao\n");
+    printf("2. Adicionar Edicao Aleatoria\n");
+    printf("3. Historico\n");
+    printf("4. Voltar\n");
 }
 
-void print_hist()
-{
-    printf("\nEscolha uma opcao:\n");
-    printf("1. Imprimir Historico\n");
-    printf("2. Adicionar Edicao\n");
-    printf("3. Deletar Edicao\n");
-    printf("7. Voltar ao menu principal\n");
-}
-
-void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
+void swit_menug(Lista *lista, ImageGray *image_gray, char *filename)
 {
     int op;
     do
     {
-        print_alter();
+        print_menug();
         printf("\nDigite sua escolha: ");
         scanf("%d", &op);
 
         switch (op)
         {
         case 1:
-            flip_horizontal_gray(image_gray, lista, filename);
+            do
+            {
+                swit_gray(lista, image_gray, filename);
+            } while (op != 6);
             break;
-
         case 2:
-            flip_vertical_gray(image_gray, lista, filename);
-            break;
-
-        case 3:
-            transpose_gray(image_gray, lista, filename);
-            break;
-        case 4:
-            clahe_gray(image_gray, lista, filename);
-            break;
-
-        case 5:
-            median_blur_gray(image_gray, lista, filename);
-            break;
-
-        case 6:
             adicionar_aleatorio_gray(image_gray, lista, filename);
             break;
-
-        case 7:
-            print_hist();
+        case 3:
             swit_hist_gray(lista, image_gray);
             break;
-        case 8:
-            break;
-
-        case 9:
+        case 4:
             break;
         default:
             printf("Opcao invalida.\n");
             break;
         }
-    } while (op != 9);
+    } while (op != 4);
+}
+
+void swit_menur(Lista *lista, ImageRGB *image_rgb, char *filename)
+{
+    int op;
+    do
+    {
+        print_menug();
+        printf("\nDigite sua escolha: ");
+        scanf("%d", &op);
+
+        switch (op)
+        {
+        case 1:
+            swit_rgb(lista, image_rgb, filename);
+            break;
+        case 2:
+            adicionar_aleatorio_rgb(image_rgb, lista, filename);
+            break;
+        case 3:
+            swit_hist_rgb(lista, image_rgb);
+            break;
+        case 4:
+            break;
+        default:
+            printf("Opcao invalida.\n");
+            break;
+        }
+    } while (op != 4);
+}
+
+void print_alter()
+{
+    printf("\nEscolha uma opcao:\n");
+    printf("1. Aplicar flip horizontal\n");
+    printf("2. Aplicar flip vertical\n");
+    printf("3. Aplicar transpose\n");
+    printf("4. Aplicar CLAHE\n");
+    printf("5. Aplicar MEDIAN\n");
+    printf("6. Voltar \n");
+}
+
+void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
+{
+    int op;
+
+    print_alter();
+    printf("\nDigite sua escolha: ");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        flip_horizontal_gray(image_gray, lista, filename);
+        break;
+
+    case 2:
+        flip_vertical_gray(image_gray, lista, filename);
+        break;
+
+    case 3:
+        transpose_gray(image_gray, lista, filename);
+        break;
+    case 4:
+        clahe_gray(image_gray, lista, filename);
+        break;
+
+    case 5:
+        median_blur_gray(image_gray, lista, filename);
+        break;
+    case 6:
+        break;
+    default:
+        printf("Opcao invalida.\n");
+        break;
+    }
 }
 
 void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
@@ -92,6 +136,7 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
     int op;
     do
     {
+
         print_alter();
         printf("\nDigite sua escolha: ");
         scanf("%d", &op);
@@ -117,19 +162,8 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
         case 5:
             median_blur_rgb(image_rgb, lista, filename);
             break;
-        
+
         case 6:
-            adicionar_aleatorio_rgb(image_rgb, lista, filename);
-            break;
-
-        case 7:
-            print_hist();
-            swit_hist_rgb(lista, image_rgb);
-            break;
-
-        case 8:
-            break;
-        case 9:
             break;
 
         default:
@@ -137,13 +171,24 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
             break;
         }
 
-    } while (op != 9);
+    } while (op != 6);
 }
 
-
+void print_hist()
+{
+    printf("\nEscolha uma opcao:\n");
+    printf("1. Imprimir Historico\n");
+    printf("2. Adicionar Edicao\n");
+    printf("3. Deletar Edicao\n");
+    printf("4. Buscar\n");
+    printf("5. Desfazer Ultima alteracao\n");
+    printf("6. Voltar ao menu principal\n");
+}
 
 void swit_hist_gray(Lista *lista, ImageGray *image_gray)
 {
+    strcpy(lista->inicio->ult_alt, "Original");
+    print_hist();
     int op;
     printf("Digite a opcao:");
     scanf("%d", &op);
@@ -154,8 +199,18 @@ void swit_hist_gray(Lista *lista, ImageGray *image_gray)
         imprimir_historico(lista);
         break;
     case 2:
-
         added_gray(lista, image_gray);
+        break;
+    case 3:
+        deletar_renomear_txt(lista);
+        break;
+    case 4:
+        buscar_e_gerar_imagem(lista);
+        break;
+    case 5:
+        desfazer_alteracaogray(lista);
+        break;
+    case 6:
         break;
     default:
         printf("Opção inválida.\n");
@@ -165,6 +220,7 @@ void swit_hist_gray(Lista *lista, ImageGray *image_gray)
 
 void swit_hist_rgb(Lista *lista, ImageRGB *image_rgb)
 {
+    print_hist();
     int op;
     printf("Digite a opcao:");
     scanf("%d", &op);
@@ -175,43 +231,23 @@ void swit_hist_rgb(Lista *lista, ImageRGB *image_rgb)
         imprimir_historico(lista);
         break;
     case 2:
-
         added_rgb(lista, image_rgb);
+    case 3:
+        // deletar
         break;
+    case 4:
+        // buscar
+        break;
+    case 5:
+        desfazer_alteracaorgb(lista);
+        break;
+    case 6:
+        break;
+
     default:
         printf("Opção inválida.\n");
         break;
     }
-}
-
-void delete_temp_files(Lista *lista, const char *base_name)
-{
-    for (int i = 1; i <= lista->tam; i++)
-    {
-        char temp_filename[100];
-        sprintf(temp_filename, "%s.txt%d", base_name, i);
-        if (remove(temp_filename) != 0)
-        {
-            perror("Erro ao deletar o arquivo temporário");
-        }
-    }
-}
-
-void delete_current_png(const char *base_name)
-{
-    char png_filename[100];
-    snprintf(png_filename, sizeof(png_filename), "atual_%s.png", base_name);
-    if (remove(png_filename) != 0)
-    {
-        perror("Erro ao deletar o arquivo PNG atual");
-    }
-}
-
-void call_python_script(char *py, char *funcao, char *txt, char *output)
-{
-    char command[256];
-    snprintf(command, sizeof(command), "python %s %s %s %s", py, funcao, txt, output);
-    system(command);
 }
 
 Lista *criaLista()
@@ -228,18 +264,6 @@ Lista *criaLista()
     lista->tam = 0;
 
     return lista;
-}
-
-void liberar_lista(Lista *lista)
-{
-    Elemento *atual = lista->inicio;
-    while (atual)
-    {
-        Elemento *prox = atual->prox;       
-        free(atual);
-        atual = prox;
-    }
-    free(lista);
 }
 
 void adicionar_no_lista(Lista *lista, char *filename)
@@ -268,26 +292,38 @@ void adicionar_no_lista(Lista *lista, char *filename)
     lista->tam++;
 }
 
+void liberar_lista(Lista *lista)
+{
+    Elemento *current = lista->inicio;
+    Elemento *next;
+
+    while (current != NULL)
+    {
+        next = current->prox;
+        free(current);
+        current = next;
+    }
+
+    lista->inicio = NULL;
+    lista->fim = NULL;
+    lista->tam = 0;
+}
+
 void imprimir_historico(Lista *lista)
 {
     Elemento *elem = lista->inicio;
 
     while (elem)
     {
-        printf("Arquivo: %s\n", elem->filename);
+        printf("%s - %s\n", elem->filename, elem->ult_alt);
 
         elem = elem->prox;
         if (elem)
         {
-            printf("\n"); // Espaço entre arquivos
-        }
-        else
-        {
-            printf("\n"); // Fim do último arquivo
+            printf("\n");
         }
     }
 }
-
 
 void added_gray(Lista *lista, ImageGray *image_gray)
 {
@@ -297,11 +333,41 @@ void added_gray(Lista *lista, ImageGray *image_gray)
     printf("Digite o nome do TXT:");
     scanf("%s", txt);
 
+    Elemento *current = lista->inicio->prox;
+    int found = 0;
+    while (current != NULL)
+    {
+        if (strcmp(current->filename, txt) == 0)
+        {
+            found = 1;
+            break;
+        }
+        current = current->prox;
+    }
+
+    if (!found)
+    {
+        printf("O arquivo %s nao pode ser editado ou nao esta na lista.\n", txt);
+        return;
+    }
+
     image_gray = read_image_gray(txt);
 
     call_python_script("image_utils.py", "image_gray_from_txt", txt, "atual_gray.png");
-    lista->cont = 0;
-    swit_gray(lista, image_gray, txt);
+
+    char base_name[100];
+    strcpy(base_name, txt);
+    char *dot = strstr(base_name, ".txt"); // Encontra ".txt" na string
+    if (dot != NULL)
+    {
+        *dot = '\0'; // Termina a string no ponto para remover tudo após ".txt"
+    }
+    strcat(base_name, ".txt");
+
+    swit_gray(lista, image_gray, base_name);
+
+    strcat(lista->fim->ult_alt, " -> ");
+    strcat(lista->fim->ult_alt, txt);
 }
 
 void added_rgb(Lista *lista, ImageRGB *image_rgb)
@@ -312,11 +378,41 @@ void added_rgb(Lista *lista, ImageRGB *image_rgb)
     printf("Digite o nome do TXT:");
     scanf(" %s", txt);
 
+    Elemento *current = lista->inicio->prox;
+    int found = 0;
+    while (current != NULL)
+    {
+        if (strcmp(current->filename, txt) == 0)
+        {
+            found = 1;
+            break;
+        }
+        current = current->prox;
+    }
+
+    if (!found)
+    {
+        printf("O arquivo %s nao pode ser editado ou nao esta na lista.\n", txt);
+        return;
+    }
+
     image_rgb = read_image_rgb(txt);
 
     call_python_script("image_utils.py", "image_rgb_from_txt", txt, "atual_rgb.png");
-    lista->cont = 0;
-    swit_rgb(lista, image_rgb, txt);
+
+    char base_name[100];
+    strcpy(base_name, txt);
+    char *dot = strstr(base_name, ".txt");
+    if (dot != NULL)
+    {
+        *dot = '\0';
+    }
+    strcat(base_name, ".txt");
+
+    swit_rgb(lista, image_rgb, base_name);
+
+    strcat(lista->fim->ult_alt, " -> ");
+    strcat(lista->fim->ult_alt, txt);
 }
 
 ImageGray *read_image_gray(char *filename)
@@ -429,20 +525,8 @@ ImageRGB *read_image_rgb(char *filename)
 
 void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
-    // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
-    // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
-
-    // chamar a struct (que estara com os novos valores), e preencher o arquivo
-    // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
-    // adicionar ao encadeamento, no final
-    char filename[50];
-    strcpy(filename, filename_gray);
-
-    if (lista->cont > 0)
-    {
-
-        snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam + 1);
-    }
+    char filename[256];
+    snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam + 1);
 
     FILE *file = fopen(filename, "w");
     if (!file)
@@ -458,43 +542,21 @@ void create_image_gray(ImageGray *image, Lista *lista, char *filename_gray)
         {
             fprintf(file, "%d,", image->pixels[i * image->dim.largura + j].value);
         }
-
         fprintf(file, "\n");
     }
 
     fclose(file);
-    
-        adicionar_no_lista(lista, filename);
-    
+
+    adicionar_no_lista(lista, filename);
 
     call_python_script("image_utils.py", "image_gray_from_txt", filename, "atual_gray.png");
 }
 
-void free_image_gray(ImageGray *image)
-{
-    if (image)
-    {
-        free(image->pixels);
-        free(image);
-    }
-}
-
 void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
-    // Aqui, vai ser chamado toda vez que a imagem for manipulada. Essa função sera chamada ao final,
-    // para criar o novo arquivo com os valores novos, e ele tem que estar dentro de uma lista duplamente encadeada
-
-    // chamar a struct (que estara com os novos valores), e preencher o arquivo
-    // o arquivo sera criado toda vez que ele for criado, e o nome sera *alteração+num da alteração
-    // adicionar ao encadeamento, no final
-
     char filename[50];
+    snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam + 1);
 
-    strcpy(filename, filename_rgb);
-    if (lista->cont > 0)
-    {
-        snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam + 1);
-    }
     FILE *file = fopen(filename, "w");
     if (!file)
     {
@@ -515,20 +577,10 @@ void create_image_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     }
 
     fclose(file);
-    
-        adicionar_no_lista(lista, filename);
-    
+
+    adicionar_no_lista(lista, filename);
 
     call_python_script("image_utils.py", "image_rgb_from_txt", filename, "atual_rgb.png");
-}
-
-void free_image_rgb(ImageRGB *image)
-{
-    if (image)
-    {
-        free(image->pixels);
-        free(image);
-    }
 }
 
 void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
@@ -547,14 +599,7 @@ void flip_vertical_gray(ImageGray *image, Lista *lista, char *filename_gray)
         create_image_gray(image, lista, filename_gray);
         printf("\nFlip vertical aplicado.\n");
 
-        char filename[50];
-        strcpy(filename, filename_gray);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
-        }
-
+        strcpy(lista->fim->ult_alt, "Flip Vertical");
     }
     else
     {
@@ -577,23 +622,17 @@ void flip_horizontal_gray(ImageGray *image, Lista *lista, char *filename_gray)
                 image->pixels[idx2].value = temp;
             }
         }
+
         create_image_gray(image, lista, filename_gray);
         printf("\nFlip horizontal aplicado.\n");
-
-        char filename[50];
-        strcpy(filename, filename_gray);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
-        }
-
+        strcpy(lista->fim->ult_alt, "Flip Horizontal");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar flip horizontal.\n");
     }
 }
+
 void transpose_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     if (lista->tam > 0)
@@ -621,124 +660,11 @@ void transpose_gray(ImageGray *image, Lista *lista, char *filename_gray)
         create_image_gray(image, lista, filename_gray);
         printf("\nTranspose aplicado.\n");
 
-        char filename[50];
-        strcpy(filename, filename_gray);
-
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
-        }
-
+        strcpy(lista->fim->ult_alt, "Transpose");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Transpose.\n");
-    }
-}
-
-void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
-{
-    if (lista->tam > 0)
-    {
-        for (int i = 0; i < image->dim.altura / 2; i++)
-        {
-            for (int j = 0; j < image->dim.largura; j++)
-            {
-                PixelRGB temp = image->pixels[i * image->dim.largura + j];
-                image->pixels[i * image->dim.largura + j] = image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j];
-                image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j] = temp;
-            }
-        }
-        create_image_rgb(image, lista, filename_rgb);
-        printf("\nFlip vertical aplicado.\n");
-        char filename[50];
-        strcpy(filename, filename_rgb);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
-        }
-
-    }
-    else
-    {
-        fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip vertical.\n");
-    }
-}
-
-void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
-{
-    if (lista->tam > 0)
-    {
-        for (int i = 0; i < image->dim.altura; i++)
-        {
-            for (int j = 0; j < image->dim.largura / 2; j++)
-            {
-                int idx1 = i * image->dim.largura + j;
-                int idx2 = i * image->dim.largura + (image->dim.largura - j - 1);
-                PixelRGB temp = image->pixels[idx1];
-                image->pixels[idx1] = image->pixels[idx2];
-                image->pixels[idx2] = temp;
-            }
-        }
-        create_image_rgb(image, lista, filename_rgb);
-        printf("\nFlip horizontal aplicado.\n");
-
-        char filename[50];
-        strcpy(filename, filename_rgb);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
-        }
-
-    }
-    else
-    {
-        fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip horizontal.\n");
-    }
-}
-
-void transpose_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
-{
-    if (lista->tam > 0)
-    {
-        PixelRGB *transpose_pixels = malloc(image->dim.altura * image->dim.largura * sizeof(PixelRGB));
-        if (!transpose_pixels)
-        {
-            fprintf(stderr, "Erro ao alocar memória para pixels transpostos.\n");
-            exit(1);
-        }
-        for (int i = 0; i < image->dim.altura; i++)
-        {
-            for (int j = 0; j < image->dim.largura; j++)
-            {
-                transpose_pixels[j * image->dim.altura + i] = image->pixels[i * image->dim.largura + j];
-            }
-        }
-        int temp = image->dim.altura;
-        image->dim.altura = image->dim.largura;
-        image->dim.largura = temp;
-
-        free(image->pixels);
-        image->pixels = transpose_pixels;
-
-        create_image_rgb(image, lista, filename_rgb);
-        printf("\nTranspose aplicado.\n");
-
-        char filename[50];
-        strcpy(filename, filename_rgb);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
-        }
-
-    }
-    else
-    {
-        fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o Transpose.\n");
     }
 }
 
@@ -862,18 +788,221 @@ void clahe_gray(ImageGray *image, Lista *lista, char *filename_gray)
         create_image_gray(image, lista, filename_gray);
         printf("\nCLAHE aplicado.\n");
 
-        char filename[50];
-        strcpy(filename, filename_gray);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
-        }
-
+        strcpy(lista->fim->ult_alt, "Clahe");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o CLAHE.\n");
+    }
+}
+
+void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
+{
+    if (lista->tam > 0)
+    {
+        int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
+        int largura = image->dim.largura;
+        int altura = image->dim.altura;
+        PixelGray *pixels = image->pixels;
+
+        int half_kernel = tamanho_kernel / 2;
+        PixelGray *temp_pixels = (PixelGray *)malloc(tamanho_kernel * tamanho_kernel * sizeof(PixelGray));
+
+        if (!temp_pixels)
+        {
+            fprintf(stderr, "Erro ao alocar memória para pixels temporários.\n");
+            return;
+        }
+
+        // Aplica o filtro de median blur
+        for (int y = 0; y < altura; y++)
+        {
+            for (int x = 0; x < largura; x++)
+            {
+                int contador = 0;
+
+                for (int ky = -half_kernel; ky <= half_kernel; ky++)
+                {
+                    for (int kx = -half_kernel; kx <= half_kernel; kx++)
+                    {
+                        int novo_x = x + kx;
+                        int novo_y = y + ky;
+
+                        if (novo_x >= 0 && novo_x < largura && novo_y >= 0 && novo_y < altura)
+                        {
+                            int indice = novo_y * largura + novo_x;
+                            temp_pixels[contador++] = pixels[indice];
+                        }
+                    }
+                }
+
+                // Ordena os pixels temporários para encontrar o valor mediano
+                qsort(temp_pixels, contador, sizeof(PixelGray), compararg);
+
+                // Atribui o valor mediano ao pixel atual
+                int indice = y * largura + x;
+                pixels[indice] = temp_pixels[contador / 2];
+            }
+        }
+
+        free(temp_pixels);
+
+        // Atualiza a lista com a nova imagem
+        create_image_gray(image, lista, filename_gray);
+        printf("\nMedian Blur aplicado.\n");
+        strcpy(lista->fim->ult_alt, "Median Blur");
+    }
+    else
+    {
+        fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Median Blur.\n");
+    }
+}
+
+void adicionar_aleatorio_gray(ImageGray *image, Lista *lista, char *filename_gray)
+{
+
+    srand(time(NULL));
+
+    int random_case = rand() % 5 + 1;
+
+    switch (random_case)
+    {
+    case 1:
+        flip_horizontal_gray(image, lista, filename_gray);
+        break;
+
+    case 2:
+        flip_vertical_gray(image, lista, filename_gray);
+        break;
+
+    case 3:
+        transpose_gray(image, lista, filename_gray);
+        break;
+
+    case 4:
+        clahe_gray(image, lista, filename_gray);
+        break;
+
+    case 5:
+        median_blur_gray(image, lista, filename_gray);
+        break;
+    }
+}
+
+void desfazer_alteracaogray(Lista *lista)
+{
+    char op;
+    if (lista->tam == 1)
+    {
+        printf("Não há alterações para desfazer.\n");
+        return;
+    }
+    else
+    {
+        // Obter o último elemento da lista de alterações
+        Elemento *ultimo = lista->fim;
+
+        printf("\nApagar %s (s/n)?", ultimo->filename);
+        scanf(" %c", &op);
+        if (op == 's')
+        {
+            if (remove(ultimo->filename) == 0)
+            {
+                printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
+            }
+            else
+            {
+                perror("Erro ao remover o arquivo");
+            }
+            remover_ultimo_lista(lista);
+            read_image_gray(ultimo->filename);
+            call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
+            printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+        }
+    }
+}
+
+void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+{
+    if (lista->tam > 0)
+    {
+        for (int i = 0; i < image->dim.altura / 2; i++)
+        {
+            for (int j = 0; j < image->dim.largura; j++)
+            {
+                PixelRGB temp = image->pixels[i * image->dim.largura + j];
+                image->pixels[i * image->dim.largura + j] = image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j];
+                image->pixels[(image->dim.altura - i - 1) * image->dim.largura + j] = temp;
+            }
+        }
+        create_image_rgb(image, lista, filename_rgb);
+        printf("\nFlip vertical aplicado.\n");
+
+        strcpy(lista->fim->ult_alt, "Flip Vertical");
+    }
+    else
+    {
+        fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip vertical.\n");
+    }
+}
+
+void flip_horizontal_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+{
+    if (lista->tam > 0)
+    {
+        for (int i = 0; i < image->dim.altura; i++)
+        {
+            for (int j = 0; j < image->dim.largura / 2; j++)
+            {
+                int idx1 = i * image->dim.largura + j;
+                int idx2 = i * image->dim.largura + (image->dim.largura - j - 1);
+                PixelRGB temp = image->pixels[idx1];
+                image->pixels[idx1] = image->pixels[idx2];
+                image->pixels[idx2] = temp;
+            }
+        }
+        create_image_rgb(image, lista, filename_rgb);
+        printf("\nFlip horizontal aplicado.\n");
+        strcpy(lista->fim->ult_alt, "Flip Horizontal");
+    }
+    else
+    {
+        fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar flip horizontal.\n");
+    }
+}
+
+void transpose_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+{
+    if (lista->tam > 0)
+    {
+        PixelRGB *transpose_pixels = malloc(image->dim.altura * image->dim.largura * sizeof(PixelRGB));
+        if (!transpose_pixels)
+        {
+            fprintf(stderr, "Erro ao alocar memória para pixels transpostos.\n");
+            exit(1);
+        }
+        for (int i = 0; i < image->dim.altura; i++)
+        {
+            for (int j = 0; j < image->dim.largura; j++)
+            {
+                transpose_pixels[j * image->dim.altura + i] = image->pixels[i * image->dim.largura + j];
+            }
+        }
+        int temp = image->dim.altura;
+        image->dim.altura = image->dim.largura;
+        image->dim.largura = temp;
+
+        free(image->pixels);
+        image->pixels = transpose_pixels;
+
+        create_image_rgb(image, lista, filename_rgb);
+        printf("\nTranspose aplicado.\n");
+
+        strcpy(lista->fim->ult_alt, "Flip Transpose");
+    }
+    else
+    {
+        fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o Transpose.\n");
     }
 }
 
@@ -884,8 +1013,8 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
         float clip_limit = 3.0;
         int NUM_BINS = 256;
 
-        int largura_bloco = image->dim.altura; // Tamanho do bloco
-        int altura_bloco = image->dim.largura; // Tamanho do bloco
+        int largura_bloco = image->dim.altura;
+        int altura_bloco = image->dim.largura;
 
         int num_blocos_x = (image->dim.largura + largura_bloco - 1) / largura_bloco;
         int num_blocos_y = (image->dim.altura + altura_bloco - 1) / altura_bloco;
@@ -917,7 +1046,7 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
         }
 
         for (int canal = 0; canal < 3; canal++)
-        { // Loop por cada canal de cor (0: Red, 1: Green, 2: Blue)
+        {
             for (int i = 0; i < num_blocos_y; i++)
             {
                 for (int j = 0; j < num_blocos_x; j++)
@@ -1037,24 +1166,12 @@ void clahe_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 
         printf("\nCLAHE aplicado.\n");
 
-        char filename[50];
-        strcpy(filename, filename_rgb);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
-        }
+        strcpy(lista->fim->ult_alt, "Clahe");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o CLAHE.\n");
     }
-}
-
-// Função auxiliar para comparar pixels (utilizada na ordenação)
-int comparar(const void *a, const void *b)
-{
-    return (*(PixelRGB *)a).red - (*(PixelRGB *)b).red;
 }
 
 void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
@@ -1112,97 +1229,13 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
         create_image_rgb(image, lista, filename_rgb);
         printf("\nMedian Blur aplicado.\n");
 
-        char filename[50];
-        strcpy(filename, filename_rgb);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_rgb, lista->tam);
-        }
-
+        strcpy(lista->fim->ult_alt, "Median Blur");
     }
     else
     {
         fprintf(stderr, "\nNenhuma imagem RGB carregada para aplicar o Median Blur.\n");
     }
 }
-
-int compararg(const void *a, const void *b)
-{
-    return *(unsigned char *)a - *(unsigned char *)b;
-}
-
-void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
-{
-    if (lista->tam > 0)
-    {
-        int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
-        int largura = image->dim.largura;
-        int altura = image->dim.altura;
-        PixelGray *pixels = image->pixels;
-
-        int half_kernel = tamanho_kernel / 2;
-        PixelGray *temp_pixels = (PixelGray *)malloc(tamanho_kernel * tamanho_kernel * sizeof(PixelGray));
-
-        if (!temp_pixels)
-        {
-            fprintf(stderr, "Erro ao alocar memória para pixels temporários.\n");
-            return;
-        }
-
-        // Aplica o filtro de median blur
-        for (int y = 0; y < altura; y++)
-        {
-            for (int x = 0; x < largura; x++)
-            {
-                int contador = 0;
-
-                for (int ky = -half_kernel; ky <= half_kernel; ky++)
-                {
-                    for (int kx = -half_kernel; kx <= half_kernel; kx++)
-                    {
-                        int novo_x = x + kx;
-                        int novo_y = y + ky;
-
-                        if (novo_x >= 0 && novo_x < largura && novo_y >= 0 && novo_y < altura)
-                        {
-                            int indice = novo_y * largura + novo_x;
-                            temp_pixels[contador++] = pixels[indice];
-                        }
-                    }
-                }
-
-                // Ordena os pixels temporários para encontrar o valor mediano
-                qsort(temp_pixels, contador, sizeof(PixelGray), compararg);
-
-                // Atribui o valor mediano ao pixel atual
-                int indice = y * largura + x;
-                pixels[indice] = temp_pixels[contador / 2];
-            }
-        }
-
-        free(temp_pixels);
-
-        // Atualiza a lista com a nova imagem
-        create_image_gray(image, lista, filename_gray);
-        printf("\nMedian Blur aplicado.\n");
-
-        char filename[50];
-        strcpy(filename, filename_gray);
-        if (lista->cont > 0)
-        {
-
-            snprintf(filename, sizeof(filename), "%s%d", filename_gray, lista->tam);
-        }
-
-    }
-    else
-    {
-        fprintf(stderr, "\nNenhuma imagem em escala de cinza carregada para aplicar o Median Blur.\n");
-    }
-}
-
-// Função para deletar arquivos temporários de texto
 
 void remover_ultimo_lista(Lista *lista)
 {
@@ -1231,126 +1264,169 @@ void remover_ultimo_lista(Lista *lista)
     lista->tam--;
 }
 
-void adicionar_aleatorio_gray(ImageGray *image, Lista *lista, char *filename_gray) {
-    
-    srand(time(NULL));
-    
-    
-    int random_case = rand() % 7 + 1;
-
-    
-    switch(random_case) {
-        case 1:
-            flip_horizontal_gray(image, lista, filename_gray);
-            break;
-
-        case 2:
-            flip_vertical_gray(image, lista, filename_gray);
-            break;
-
-        case 3:
-            transpose_gray(image, lista, filename_gray);
-            break;
-
-        case 4:
-            clahe_gray(image, lista, filename_gray);
-            break;
-
-        case 5:
-            median_blur_gray(image, lista, filename_gray);
-            break;
-
-        case 6:
-            print_hist();
-            swit_hist_gray(lista, image);
-            break;
-
-        case 7:
-            break;
-
-        default:
-            printf("Opcao invalida.\n");
-            break;
-    }
-}
-
-void adicionar_aleatorio_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) {
-  
-    srand(time(NULL));
-    
-   
-    int random_case = rand() % 7 + 1;
-
-    
-    switch(random_case) {
-        case 1:
-            flip_horizontal_rgb(image, lista, filename_rgb);
-            break;
-
-        case 2:
-            flip_vertical_rgb(image, lista, filename_rgb);
-            break;
-
-        case 3:
-            transpose_rgb(image, lista, filename_rgb);
-            break;
-
-        case 4:
-            clahe_rgb(image, lista, filename_rgb);
-            break;
-
-        case 5:
-            median_blur_rgb(image, lista, filename_rgb);
-            break;
-
-        case 6:
-            print_hist();
-            swit_hist_rgb(lista, image);
-            break;
-
-        case 7:
-            break;
-
-        default:
-            printf("Opcao invalida.\n");
-            break;
-    }
-}
-
-
-void desfazer_alteracaogray(Lista *lista)
+void buscar_e_gerar_imagem(Lista *lista)
 {
-    char op;
-    if (lista->tam == 1)
+    char filename[50];
+    char nome[50];
+    printf("Digite o nome do TXT: ");
+    scanf("%s", filename);
+
+    char base_name[100];
+    strcpy(base_name, filename);
+    char *dot = strstr(base_name, ".txt"); // Encontra ".txt" na string
+    if (dot != NULL)
     {
-        printf("Não há alterações para desfazer.\n");
+        *dot = '\0'; // Termina a string no ponto para remover tudo após ".txt"
+    }
+    sprintf(nome, "atual_%s.png", base_name);
+
+    Elemento *elem = lista->inicio; // Começa a partir do segundo elemento
+
+    while (elem != NULL)
+    {
+        if (strcmp(elem->filename, filename) == 0)
+        {
+            call_python_script("image_utils.py", "image_gray_from_txt", filename, nome);
+
+            break;
+        }
+
+        elem = elem->prox;
+    }
+    printf("Arquivo nao existente na lista");
+}
+
+void deletar_renomear_txt(Lista *lista)
+{
+    char filename[50];
+    printf("Digite o nome do TXT a ser deletado: ");
+    scanf("%s", filename);
+
+    Elemento *elem = lista->inicio;
+    Elemento *prev = NULL;
+
+    // Verifica se a lista está vazia
+    if (elem == NULL)
+    {
+        printf("A lista está vazia.\n");
         return;
     }
-    else
-    {
-        // Obter o último elemento da lista de alterações
-        Elemento *ultimo = lista->fim;
 
-        printf("\nApagar %s (s/n)?", ultimo->filename);
-        scanf(" %c", &op);
-        if (op == 's')
+    // Pula o primeiro elemento ("Original")
+    prev = elem;
+    elem = elem->prox;
+
+    // Percorre a lista a partir do segundo elemento
+    while (elem != NULL)
+    {
+        if (strcmp(elem->filename, filename) == 0)
         {
-            if (remove(ultimo->filename) == 0)
+            // Remove o arquivo do sistema
+            if (remove(filename) == 0)
             {
-                printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
+                printf("Arquivo %s deletado com sucesso.\n", filename);
+
+                // Remove o elemento da lista
+                prev->prox = elem->prox;
+                if (elem->prox != NULL)
+                {
+                    elem->prox->ant = prev;
+                }
+                lista->tam--;
+
+                // Renomear arquivos subsequentes
+                Elemento *temp = elem->prox;
+                int index = 2; // Começa a renomear a partir do segundo elemento
+
+                while (temp != NULL)
+                {
+                    char nomea[50];
+                    char nomen[50];
+
+                    strcpy(nomea, temp->filename);
+
+                    char base_name[100];
+                    strcpy(base_name, nomea);
+                    char *dot = strstr(base_name, ".txt");
+                    if (dot != NULL)
+                    {
+                        *dot = '\0';
+                    }
+
+                    snprintf(nomen, sizeof(nomen), "%s.txt%d", base_name, index);
+                    index++;
+
+                    if (rename(nomea, nomen) == 0)
+                    {
+                        printf("Arquivo %s renomeado para %s com sucesso.\n", nomea, nomen);
+                        strcpy(temp->filename, nomen); // Atualiza o nome no elemento
+                    }
+                    else
+                    {
+                        printf("Erro ao renomear o arquivo %s.\n", nomea);
+                    }
+
+                    temp = temp->prox;
+                }
+
+                free(elem);
+                return;
             }
             else
             {
-                perror("Erro ao remover o arquivo");
+                printf("Erro ao deletar o arquivo %s.\n", filename);
             }
-            remover_ultimo_lista(lista);
-            read_image_gray(ultimo->filename);
-            call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
-            printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
         }
+
+        prev = elem;
+        elem = elem->prox;
     }
+
+    printf("Arquivo não existente na lista ou é o primeiro elemento.\n");
 }
 
+void adicionar_aleatorio_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
+{
+
+    srand(time(NULL));
+
+    int random_case = rand() % 7 + 1;
+
+    switch (random_case)
+    {
+    case 1:
+        flip_horizontal_rgb(image, lista, filename_rgb);
+        break;
+
+    case 2:
+        flip_vertical_rgb(image, lista, filename_rgb);
+        break;
+
+    case 3:
+        transpose_rgb(image, lista, filename_rgb);
+        break;
+
+    case 4:
+        clahe_rgb(image, lista, filename_rgb);
+        break;
+
+    case 5:
+        median_blur_rgb(image, lista, filename_rgb);
+        break;
+
+    case 6:
+        print_hist();
+        swit_hist_rgb(lista, image);
+        break;
+
+    case 7:
+        break;
+
+    default:
+        printf("Opcao invalida.\n");
+        break;
+    }
+}
 
 void desfazer_alteracaorgb(Lista *lista)
 {
@@ -1386,6 +1462,46 @@ void desfazer_alteracaorgb(Lista *lista)
     }
 }
 
+void delete_temp_files(Lista *lista, const char *base_name)
+{
+    for (int i = 1; i <= lista->tam; i++)
+    {
+        char temp_filename[100];
+        sprintf(temp_filename, "%s.txt%d", base_name, i);
+        if (remove(temp_filename) != 0)
+        {
+            perror("Erro ao deletar o arquivo temporário");
+        }
+    }
+}
+
+void delete_current_png(const char *base_name)
+{
+    char png_filename[100];
+    snprintf(png_filename, sizeof(png_filename), "atual_%s.png", base_name);
+    if (remove(png_filename) != 0)
+    {
+        perror("Erro ao deletar o arquivo PNG atual");
+    }
+}
+
+void call_python_script(char *py, char *funcao, char *txt, char *output)
+{
+    char command[256];
+    snprintf(command, sizeof(command), "python %s %s %s %s", py, funcao, txt, output);
+    system(command);
+}
+
+int compararg(const void *a, const void *b)
+
+{
+    return *(unsigned char *)a - *(unsigned char *)b;
+}
+
+int comparar(const void *a, const void *b)
+{
+    return (*(PixelRGB *)a).red - (*(PixelRGB *)b).red;
+}
 // Elemento *encontrar_elemento(Lista *lista, char *filename)
 // {
 //     if (lista->tam == 0)
