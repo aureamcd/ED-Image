@@ -124,6 +124,9 @@ void desfazer_alteracaorgb(Lista *lista);
 void adicionar_aleatorio_gray(ImageGray *image, Lista *lista, char *filename_gray);
 void adicionar_aleatorio_rgb(ImageRGB *image, Lista *lista, char *filename_rgb);
 
+void desfazer_alteracaogray(Lista *lista);
+void desfazer_alteracaorgb(Lista *lista);
+
 
 
 #endif // IMAGE_H

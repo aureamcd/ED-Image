@@ -1543,83 +1543,73 @@ void adicionar_aleatorio_rgb(ImageRGB *image, Lista *lista, char *filename_rgb) 
 }
 
 
+void desfazer_alteracaogray(Lista *lista)
+{
+    char op;
+    if (lista->tam == 1)
+    {
+        printf("Não há alterações para desfazer.\n");
+        return;
+    }
+    else
+    {
+        // Obter o último elemento da lista de alterações
+        Elemento *ultimo = lista->fim;
 
-// void desfazer_alteracaogray(Lista *lista)
-// {
-//     char op;
-//     Pilha *p = (Pilha *)malloc(sizeof(Pilha));
-//     Elemento *atual = (Elemento *)malloc(sizeof(Elemento));
+        printf("\nApagar %s (s/n)?", ultimo->filename);
+        scanf(" %c", &op);
+        if (op == 's')
+        {
+            if (remove(ultimo->filename) == 0)
+            {
+                printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
+            }
+            else
+            {
+                perror("Erro ao remover o arquivo");
+            }
+            remover_ultimo_lista(lista);
+            read_image_gray(ultimo->filename);
+            call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
+            printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+        }
+    }
+}
 
-//     if (lista->tam > 1)
-//     {
-//         Pilha *aux = p;
-//         p = p->prox;
 
-//         // comparar os primeiros 100 pixels pra enconstrar o da pilha
+void desfazer_alteracaorgb(Lista *lista)
+{
+    char op;
+    if (lista->tam == 1)
+    {
+        printf("Não há alterações para desfazer.\n");
+        return;
+    }
+    else
+    {
 
-//         printf("\nApagar %s (s/n)?", aux.->filename);
-//         scanf("%c", &op);
-//         getchar();
-//         printf("Elemento %d do topo removido\n", aux->info);
-//         free(aux);
-//     }
+        // Obter o último elemento da lista de alterações
+        Elemento *ultimo = lista->fim;
 
-//     // Obter o último elemento da lista de alterações
-//     Elemento *ultimo = lista->fim;
-
-//     printf("\nApagar %s (s/n)?", ultimo->filename);
-//     scanf("%c", &op);
-//     if (op == 's')
-//     {
-//         if (remove(ultimo->filename) == 0)
-//         {
-//             printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
-//         }
-//         else
-//         {
-//             perror("Erro ao remover o arquivo");
-//         }
-//         remover_ultimo_lista(lista);
-//         read_image_rgb(ultimo->filename);
-//         call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
-//         printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
-//     }
-// }
-// }
-
-// void desfazer_alteracaorgb(Lista *lista)
-// {
-//     char op;
-//     if (lista->tam == 1)
-//     {
-//         printf("Não há alterações para desfazer.\n");
-//         return;
-//     }
-//     else
-//     {
-
-//         // Obter o último elemento da lista de alterações
-//         Elemento *ultimo = lista->fim;
-
-//         printf("\nApagar %s (s/n)?", ultimo->filename);
-//         scanf("%c", &op);
-//         if (op == 's')
-//         {
-//             if (remove(ultimo->filename) == 0)
-//             {
-//                 printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
-//             }
-//             else
-//             {
-//                 perror("Erro ao remover o arquivo");
-//             }
-//             remover_ultimo_lista(lista);
-//             read_image_rgb(ultimo->filename);
-//             call_python_script("image_utils.py", "image_rgb_from_txt", ultimo->filename, "atual_rgb.png");
-//             printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
-//         }
-//     }
-// }
+        printf("\nApagar %s (s/n)?", ultimo->filename);
+        scanf("%c", &op);
+        if (op == 's')
+        {
+            if (remove(ultimo->filename) == 0)
+            {
+                printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
+            }
+            else
+            {
+                perror("Erro ao remover o arquivo");
+            }
+            remover_ultimo_lista(lista);
+            read_image_rgb(ultimo->filename);
+            call_python_script("image_utils.py", "image_rgb_from_txt", ultimo->filename, "atual_rgb.png");
+            printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+        }
+    }
+}
 
 // Elemento *encontrar_elemento(Lista *lista, char *filename)
 // {
