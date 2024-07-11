@@ -37,7 +37,7 @@ void swit_menug(Lista *lista, ImageGray *image_gray, char *filename)
         case 1:
             do
             {
-                swit_gray(lista, image_gray, filename);
+            swit_gray(lista, image_gray, filename);
             } while (op != 6);
             break;
         case 2:
@@ -892,6 +892,7 @@ void adicionar_aleatorio_gray(ImageGray *image, Lista *lista, char *filename_gra
 void desfazer_alteracaogray(Lista *lista)
 {
     char op;
+
     if (lista->tam == 1)
     {
         printf("Não há alterações para desfazer.\n");
@@ -902,10 +903,16 @@ void desfazer_alteracaogray(Lista *lista)
         // Obter o último elemento da lista de alterações
         Elemento *ultimo = lista->fim;
 
-        printf("\nApagar %s (s/n)?", ultimo->filename);
-        scanf(" %c", &op);
+        printf("\nApagar %s (s/n)? ", ultimo->filename);
+        fflush(stdout); // Garante que a saída seja exibida antes de limpar o buffer de entrada
+        fflush(stdin);  // Limpa o buffer de entrada
+
+        scanf(" %c", &op); // Espaço antes do %c para ignorar whitespace
+
         if (op == 's')
         {
+            printf("Tentando remover o arquivo: %s\n", ultimo->filename); // Debug print
+
             if (remove(ultimo->filename) == 0)
             {
                 printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
@@ -914,13 +921,35 @@ void desfazer_alteracaogray(Lista *lista)
             {
                 perror("Erro ao remover o arquivo");
             }
+
+            // Remover o último elemento da lista
             remover_ultimo_lista(lista);
-            read_image_gray(ultimo->filename);
-            call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
-            printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+
+            // Obter o novo último elemento da lista
+            ultimo = lista->fim;
+
+            // Verificar se o novo último elemento está correto
+            if (ultimo != NULL)
+            {
+                printf("Restaurando a partir de %s\n", ultimo->filename); // Debug print
+
+                // Restaurar a imagem anterior
+                read_image_gray(ultimo->filename);
+                call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
+                printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+            }
+            else
+            {
+                printf("Lista está vazia após desfazer a última alteração.\n");
+            }
+        }
+        else
+        {
+            printf("Alteração não desfeita.\n");
         }
     }
 }
+
 
 void flip_vertical_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
