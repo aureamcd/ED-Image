@@ -18,11 +18,10 @@ int main()
         Lista *lista_rgb = criaLista();
         char base_name[100];
         char nomen[100];
-        char nomea[100];     
-        
-        do
-        {            
+        char nomea[100];
 
+        do
+        {
             print_menu();
             printf("\nDigite sua escolha: ");
             scanf("%d", &op);
@@ -47,7 +46,7 @@ int main()
                     char *dot = strstr(base_name, ".txt");
                     if (dot != NULL)
                     {
-                        *dot = '\0'; 
+                        *dot = '\0';
                     }
 
                     sprintf(nomea, "%s.txt%d", base_name, lista_gray->tam);
@@ -62,16 +61,16 @@ int main()
 
                     printf("\n\nEditar nova imagem? (s/n): ");
                     scanf(" %c", &opc);
-                    getchar(); 
-                   
+                    getchar();
+
                     delete_temp_files(lista_gray, base_name);
-                    delete_current_png(base_name); 
-                     liberar_lista(lista_gray);
+                    delete_current_png(base_name);
+                    liberar_lista(lista_gray);
                 }
 
                 break;
-            case 2:
 
+            case 2:
                 printf("\nDigite o nome do arquivo txt da imagem RGB: ");
                 scanf("%s", filename_rgb);
 
@@ -83,16 +82,14 @@ int main()
                     printf("Valor do primeiro pixel: Red %d, Green %d, Blue %d\n", image_rgb->pixels[0].red, image_rgb->pixels[0].green, image_rgb->pixels[0].blue);
 
                     create_image_rgb(image_rgb, lista_rgb, filename_rgb);
-                    swit_rgb(lista_rgb, image_rgb, filename_rgb);
+                    swit_menur(lista_rgb, image_rgb, filename_rgb);
 
-                    
-                   strcpy(base_name, filename_rgb);
+                    strcpy(base_name, filename_rgb);
                     char *dot = strstr(base_name, ".txt");
                     if (dot != NULL)
                     {
-                        *dot = '\0'; 
+                        *dot = '\0';
                     }
-
 
                     sprintf(nomea, "%s.txt%d", base_name, lista_rgb->tam);
                     sprintf(nomen, "%s_final.txt", base_name);
@@ -106,21 +103,20 @@ int main()
 
                     printf("\n\nEditar nova imagem? (s/n): ");
                     scanf(" %c", &opc);
-                    getchar(); 
+                    getchar();
 
-                    
-                    delete_temp_files(lista_rgb, base_name);                    
-                    delete_current_png(base_name); 
+                    delete_temp_files(lista_rgb, base_name);
+                    delete_current_png(base_name);
                     liberar_lista(lista_rgb);
                 }
 
+                break;
+
             case 3:
-                
                 printf("Opção 3 selecionada - implementar leitura e processamento de imagem.\n");
                 break;
 
             case 4:
-
                 liberar_lista(lista_gray);
                 liberar_lista(lista_rgb);
 
