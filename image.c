@@ -67,8 +67,10 @@ void swit_menur(Lista *lista, ImageRGB *image_rgb, char *filename)
         switch (op)
         {
         case 1:
+        do{
             swit_rgb(lista, image_rgb, filename);
             break;
+            } while (op != 6);
         case 2:
             adicionar_aleatorio_rgb(image_rgb, lista, filename);
             break;
@@ -134,8 +136,7 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
 void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
 {
     int op;
-    do
-    {
+    
 
         print_alter();
         printf("\nDigite sua escolha: ");
@@ -171,7 +172,7 @@ void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
             break;
         }
 
-    } while (op != 6);
+   
 }
 
 void print_hist()
@@ -213,13 +214,15 @@ void swit_hist_gray(Lista *lista, ImageGray *image_gray)
     case 6:
         break;
     default:
-        printf("Opção inválida.\n");
+        printf("Opção invalida.\n");
         break;
     }
 }
 
 void swit_hist_rgb(Lista *lista, ImageRGB *image_rgb)
 {
+        strcpy(lista->inicio->ult_alt, "Original");
+
     print_hist();
     int op;
     printf("Digite a opcao:");
@@ -233,10 +236,10 @@ void swit_hist_rgb(Lista *lista, ImageRGB *image_rgb)
     case 2:
         added_rgb(lista, image_rgb);
     case 3:
-        // deletar
+        deletar_renomear_txt(lista);
         break;
     case 4:
-        // buscar
+        buscar_e_gerar_imagem(lista);
         break;
     case 5:
         desfazer_alteracaorgb(lista);
@@ -245,7 +248,7 @@ void swit_hist_rgb(Lista *lista, ImageRGB *image_rgb)
         break;
 
     default:
-        printf("Opção inválida.\n");
+        printf("Opção invalida.\n");
         break;
     }
 }
@@ -357,10 +360,10 @@ void added_gray(Lista *lista, ImageGray *image_gray)
 
     char base_name[100];
     strcpy(base_name, txt);
-    char *dot = strstr(base_name, ".txt"); // Encontra ".txt" na string
+    char *dot = strstr(base_name, ".txt"); 
     if (dot != NULL)
     {
-        *dot = '\0'; // Termina a string no ponto para remover tudo após ".txt"
+        *dot = '\0'; 
     }
     strcat(base_name, ".txt");
 
@@ -800,7 +803,7 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
 {
     if (lista->tam > 0)
     {
-        int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
+        int tamanho_kernel = 5; 
         int largura = image->dim.largura;
         int altura = image->dim.altura;
         PixelGray *pixels = image->pixels;
@@ -814,7 +817,7 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
             return;
         }
 
-        // Aplica o filtro de median blur
+        
         for (int y = 0; y < altura; y++)
         {
             for (int x = 0; x < largura; x++)
@@ -836,10 +839,10 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
                     }
                 }
 
-                // Ordena os pixels temporários para encontrar o valor mediano
+                
                 qsort(temp_pixels, contador, sizeof(PixelGray), compararg);
 
-                // Atribui o valor mediano ao pixel atual
+               
                 int indice = y * largura + x;
                 pixels[indice] = temp_pixels[contador / 2];
             }
@@ -847,7 +850,7 @@ void median_blur_gray(ImageGray *image, Lista *lista, char *filename_gray)
 
         free(temp_pixels);
 
-        // Atualiza a lista com a nova imagem
+      
         create_image_gray(image, lista, filename_gray);
         printf("\nMedian Blur aplicado.\n");
         strcpy(lista->fim->ult_alt, "Median Blur");
@@ -900,19 +903,16 @@ void desfazer_alteracaogray(Lista *lista)
     }
     else
     {
-        // Obter o último elemento da lista de alterações
+        
         Elemento *ultimo = lista->fim;
 
         printf("\nApagar %s (s/n)? ", ultimo->filename);
-        fflush(stdout); // Garante que a saída seja exibida antes de limpar o buffer de entrada
-        fflush(stdin);  // Limpa o buffer de entrada
-
-        scanf(" %c", &op); // Espaço antes do %c para ignorar whitespace
+        fflush(stdout); 
+        fflush(stdin);  
+        scanf(" %c", &op); 
 
         if (op == 's')
         {
-            printf("Tentando remover o arquivo: %s\n", ultimo->filename); // Debug print
-
             if (remove(ultimo->filename) == 0)
             {
                 printf("Arquivo %s removido com sucesso.\n", ultimo->filename);
@@ -922,18 +922,18 @@ void desfazer_alteracaogray(Lista *lista)
                 perror("Erro ao remover o arquivo");
             }
 
-            // Remover o último elemento da lista
+            
             remover_ultimo_lista(lista);
 
-            // Obter o novo último elemento da lista
+            
             ultimo = lista->fim;
 
-            // Verificar se o novo último elemento está correto
+            
             if (ultimo != NULL)
             {
-                printf("Restaurando a partir de %s\n", ultimo->filename); // Debug print
+                printf("Restaurando a partir de %s\n", ultimo->filename); 
 
-                // Restaurar a imagem anterior
+              
                 read_image_gray(ultimo->filename);
                 call_python_script("image_utils.py", "image_gray_from_txt", ultimo->filename, "atual_gray.png");
                 printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
@@ -1207,7 +1207,7 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 {
     if (lista->tam > 0)
     {
-        int tamanho_kernel = 5; // Define o tamanho do kernel do median blur
+        int tamanho_kernel = 5; 
         int largura = image->dim.largura;
         int altura = image->dim.altura;
         PixelRGB *pixels = image->pixels;
@@ -1221,7 +1221,7 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
             return;
         }
 
-        // Aplica o filtro de median blur
+       
         for (int y = 0; y < altura; y++)
         {
             for (int x = 0; x < largura; x++)
@@ -1243,10 +1243,10 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
                     }
                 }
 
-                // Ordena os pixels temporários para encontrar o valor mediano
+              
                 qsort(temp_pixels, contador, sizeof(PixelRGB), comparar);
 
-                // Atribui o valor mediano ao pixel atual
+                
                 int indice = y * largura + x;
                 pixels[indice] = temp_pixels[contador / 2];
             }
@@ -1254,10 +1254,9 @@ void median_blur_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
 
         free(temp_pixels);
 
-        // Salva a nova imagem e atualiza a lista
+        
         create_image_rgb(image, lista, filename_rgb);
         printf("\nMedian Blur aplicado.\n");
-
         strcpy(lista->fim->ult_alt, "Median Blur");
     }
     else
@@ -1284,7 +1283,7 @@ void remover_ultimo_lista(Lista *lista)
     }
     else
     {
-        // Isso significa que estamos removendo o único elemento da lista
+        
         lista->inicio = NULL;
         lista->fim = NULL;
     }
@@ -1302,14 +1301,14 @@ void buscar_e_gerar_imagem(Lista *lista)
 
     char base_name[100];
     strcpy(base_name, filename);
-    char *dot = strstr(base_name, ".txt"); // Encontra ".txt" na string
+    char *dot = strstr(base_name, ".txt"); 
     if (dot != NULL)
     {
-        *dot = '\0'; // Termina a string no ponto para remover tudo após ".txt"
+        *dot = '\0'; 
     }
     sprintf(nome, "atual_%s.png", base_name);
 
-    Elemento *elem = lista->inicio; // Começa a partir do segundo elemento
+    Elemento *elem = lista->inicio; 
 
     while (elem != NULL)
     {
@@ -1334,28 +1333,28 @@ void deletar_renomear_txt(Lista *lista)
     Elemento *elem = lista->inicio;
     Elemento *prev = NULL;
 
-    // Verifica se a lista está vazia
+    
     if (elem == NULL)
     {
         printf("A lista está vazia.\n");
         return;
     }
 
-    // Pula o primeiro elemento ("Original")
+    
     prev = elem;
     elem = elem->prox;
 
-    // Percorre a lista a partir do segundo elemento
+    
     while (elem != NULL)
     {
         if (strcmp(elem->filename, filename) == 0)
         {
-            // Remove o arquivo do sistema
+           
             if (remove(filename) == 0)
             {
                 printf("Arquivo %s deletado com sucesso.\n", filename);
 
-                // Remove o elemento da lista
+                
                 prev->prox = elem->prox;
                 if (elem->prox != NULL)
                 {
@@ -1363,9 +1362,9 @@ void deletar_renomear_txt(Lista *lista)
                 }
                 lista->tam--;
 
-                // Renomear arquivos subsequentes
+                
                 Elemento *temp = elem->prox;
-                int index = 2; // Começa a renomear a partir do segundo elemento
+                int index = 2; 
 
                 while (temp != NULL)
                 {
@@ -1388,7 +1387,7 @@ void deletar_renomear_txt(Lista *lista)
                     if (rename(nomea, nomen) == 0)
                     {
                         printf("Arquivo %s renomeado para %s com sucesso.\n", nomea, nomen);
-                        strcpy(temp->filename, nomen); // Atualiza o nome no elemento
+                        strcpy(temp->filename, nomen); 
                     }
                     else
                     {
@@ -1442,18 +1441,7 @@ void adicionar_aleatorio_rgb(ImageRGB *image, Lista *lista, char *filename_rgb)
     case 5:
         median_blur_rgb(image, lista, filename_rgb);
         break;
-
-    case 6:
-        print_hist();
-        swit_hist_rgb(lista, image);
-        break;
-
-    case 7:
-        break;
-
-    default:
-        printf("Opcao invalida.\n");
-        break;
+    
     }
 }
 
@@ -1468,10 +1456,12 @@ void desfazer_alteracaorgb(Lista *lista)
     else
     {
 
-        // Obter o último elemento da lista de alterações
+       
         Elemento *ultimo = lista->fim;
 
         printf("\nApagar %s (s/n)?", ultimo->filename);
+         fflush(stdout); 
+        fflush(stdin); 
         scanf("%c", &op);
         if (op == 's')
         {
@@ -1484,9 +1474,24 @@ void desfazer_alteracaorgb(Lista *lista)
                 perror("Erro ao remover o arquivo");
             }
             remover_ultimo_lista(lista);
-            read_image_rgb(ultimo->filename);
-            call_python_script("image_utils.py", "image_rgb_from_txt", ultimo->filename, "atual_rgb.png");
-            printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+            ultimo = lista->fim;
+            if (ultimo != NULL)
+            {
+                printf("Restaurando a partir de %s\n", ultimo->filename); 
+
+               
+                read_image_gray(ultimo->filename);
+                call_python_script("image_utils.py", "image_rgb_from_txt", ultimo->filename, "atual_rgb.png");
+                printf("Alteração desfeita e imagem restaurada a partir de %s\n", ultimo->filename);
+            }
+            else
+            {
+                printf("Lista está vazia após desfazer a última alteração.\n");
+            }
+        }
+        else
+        {
+            printf("Alteração não desfeita.\n");
         }
     }
 }
@@ -1531,28 +1536,4 @@ int comparar(const void *a, const void *b)
 {
     return (*(PixelRGB *)a).red - (*(PixelRGB *)b).red;
 }
-// Elemento *encontrar_elemento(Lista *lista, char *filename)
-// {
-//     if (lista->tam == 0)
-//     {
-//         printf("Lista vazia, não há elementos para encontrar.\n");
-//         return NULL;
-//     }
 
-//     Elemento *atual = lista->inicio;
-
-//     // Busca pelo nó com o filename especificado
-//     while (atual != NULL && strcmp(atual->filename, filename) != 0)
-//     {
-//         atual = atual->prox;
-//     }
-
-//     if (atual == NULL)
-//     {
-//         printf("Elemento com filename '%s' não encontrado na lista.\n", filename);
-//         return NULL;
-//     }
-
-//     // Retorna o ponteiro para o elemento encontrado
-//     return atual;
-// }
