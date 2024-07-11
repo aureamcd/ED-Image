@@ -35,10 +35,8 @@ void swit_menug(Lista *lista, ImageGray *image_gray, char *filename)
         switch (op)
         {
         case 1:
-            do
-            {
+           
             swit_gray(lista, image_gray, filename);
-            } while (op != 6);
             break;
         case 2:
             adicionar_aleatorio_gray(image_gray, lista, filename);
@@ -67,10 +65,11 @@ void swit_menur(Lista *lista, ImageRGB *image_rgb, char *filename)
         switch (op)
         {
         case 1:
-        do{
+       
             swit_rgb(lista, image_rgb, filename);
+            
+            
             break;
-            } while (op != 6);
         case 2:
             adicionar_aleatorio_rgb(image_rgb, lista, filename);
             break;
@@ -135,8 +134,7 @@ void swit_gray(Lista *lista, ImageGray *image_gray, char *filename)
 
 void swit_rgb(Lista *lista, ImageRGB *image_rgb, char *filename)
 {
-    int op;
-    
+    int op;   
 
         print_alter();
         printf("\nDigite sua escolha: ");
@@ -235,6 +233,7 @@ void swit_hist_rgb(Lista *lista, ImageRGB *image_rgb)
         break;
     case 2:
         added_rgb(lista, image_rgb);
+        break;
     case 3:
         deletar_renomear_txt(lista);
         break;
@@ -1321,7 +1320,12 @@ void buscar_e_gerar_imagem(Lista *lista)
 
         elem = elem->prox;
     }
-    printf("Arquivo nao existente na lista");
+    if (strcmp(elem->filename, filename) != 0)
+    {
+           printf("Arquivo nao existente na lista");
+
+    }
+    
 }
 
 void deletar_renomear_txt(Lista *lista)
