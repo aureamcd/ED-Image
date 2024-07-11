@@ -44,10 +44,10 @@ int main()
                     swit_menug(lista_gray, image_gray, filename_gray);
 
                     strcpy(base_name, filename_gray);
-                    char *dot = strstr(base_name, ".txt"); // Encontra ".txt" na string
+                    char *dot = strstr(base_name, ".txt");
                     if (dot != NULL)
                     {
-                        *dot = '\0'; // Termina a string no ponto para remover tudo após ".txt"
+                        *dot = '\0'; 
                     }
 
                     sprintf(nomea, "%s.txt%d", base_name, lista_gray->tam);
@@ -62,11 +62,11 @@ int main()
 
                     printf("\n\nEditar nova imagem? (s/n): ");
                     scanf(" %c", &opc);
-                    getchar(); // Captura o caractere newline residual
-
-                    liberar_lista(lista_gray);
+                    getchar(); 
+                   
                     delete_temp_files(lista_gray, base_name);
-                    delete_current_png(base_name); // Deletar PNG atual
+                    delete_current_png(base_name); 
+                     liberar_lista(lista_gray);
                 }
 
                 break;
@@ -85,33 +85,37 @@ int main()
                     create_image_rgb(image_rgb, lista_rgb, filename_rgb);
                     swit_rgb(lista_rgb, image_rgb, filename_rgb);
 
-                    // Após aplicar a edição
-                    char base_name[100]; // Declare base_name_gray como array de caracteres
-                    strcpy(base_name, filename_rgb);
-                    char *dot = strrchr(base_name, '.');
-                    if (dot != NULL && strcmp(dot, ".txt") == 0)
+                    
+                   strcpy(base_name, filename_rgb);
+                    char *dot = strstr(base_name, ".txt");
+                    if (dot != NULL)
                     {
-                        *dot = '\0';
+                        *dot = '\0'; 
                     }
 
-                    sprintf(nomea, "%s_%d.txt", base_name, lista_rgb->tam);
+
+                    sprintf(nomea, "%s.txt%d", base_name, lista_rgb->tam);
                     sprintf(nomen, "%s_final.txt", base_name);
 
                     rename(nomea, nomen);
 
-                    printf("Edicao finalizada!!\n\nTXT final: %s_final.txt\nImagem: %s_final.png",
-                           base_name, base_name);
+                    sprintf(nomea, "%s_final.png", base_name);
+
+                    printf("Edicao finalizada!!\n\nTXT final: %s\nImagem: %s", nomen, nomea);
+                    call_python_script("image_utils.py", "image_rgb_from_txt", nomen, nomea);
 
                     printf("\n\nEditar nova imagem? (s/n): ");
                     scanf(" %c", &opc);
-                    getchar(); // Captura o caractere newline residual
+                    getchar(); 
 
+                    
+                    delete_temp_files(lista_rgb, base_name);                    
+                    delete_current_png(base_name); 
                     liberar_lista(lista_rgb);
-                    break;
                 }
 
             case 3:
-                // Implementar leitura e processamento de imagem semelhante aos casos anteriores
+                
                 printf("Opção 3 selecionada - implementar leitura e processamento de imagem.\n");
                 break;
 
