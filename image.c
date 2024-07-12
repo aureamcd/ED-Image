@@ -9,7 +9,7 @@ void print_menu()
     printf("\nEscolha uma opcao:\n");
     printf("1. Carregar txt em escala de cinza (Gray)\n");
     printf("2. Carregar txt RGB\n");
-    printf("3. Carregar imagem\n");
+    // printf("3. Carregar imagem\n");
     printf("4. Sair\n");
 }
 
